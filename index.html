@@ -83,15 +83,14 @@ $("signUpBtn").onclick=async()=>{
  if(!email||password.length<8){status("أدخلي بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",true);return;}
  if(!$("acceptPrivacy").checked){status("يلزم تأكيد قراءة إشعار الخصوصية وشروط الخدمة.",true);return;}
  status("جارٍ إنشاء الحساب…");const opt=$("optModel").checked;
- const {data,error}=await supabase.auth.signUp({email,password,options:{data:{interface_language:"ar"}}});
+ const {data,error}=await supabase.auth.signUp({email,password,options:{data:{
+  interface_language:"ar",
+  athr_privacy_notice_accepted:true,
+  athr_model_improvement_opt_in:opt,
+  athr_consent_version:VERSION
+ }}});
  if(error){status(error.message,true);return;}if(!data.user){status("لم يتم إنشاء الحساب.",true);return;}
- try{
-  await consent(data.user.id,"privacy_notice","accepted",{version:VERSION});
-  await consent(data.user.id,"terms_notice","accepted",{version:VERSION});
-  await consent(data.user.id,"model_improvement",opt?"accepted":"declined",{version:VERSION,optional:true});
-  if(opt){const {error:e}=await supabase.from("privacy_settings").update({model_improvement_opt_in:true,updated_at:new Date().toISOString()}).eq("user_id",data.user.id);if(e)throw e;}
- }catch(e){status("تم إنشاء الحساب، لكن تعذر حفظ سجل الموافقات بالكامل: "+e.message,true);return;}
- status(data.session?"تم إنشاء الحساب وتسجيل الدخول.":"تم إنشاء الحساب. راجعي بريدك لتأكيد الحساب ثم سجّلي الدخول.");
+ status(data.session?"تم إنشاء الحساب وتسجيل الدخول.":"تم إنشاء الحساب. تم تسجيل اختيارات الخصوصية، وراجعي بريدك لتأكيد الحساب ثم سجّلي الدخول.");
  await showSession(data.session);
 };
 $("signInBtn").onclick=async()=>{const {data,error}=await supabase.auth.signInWithPassword({email:$("authEmail").value.trim(),password:$("authPassword").value});if(error){status(error.message,true);return;}status("تم تسجيل الدخول.");await showSession(data.session);};
