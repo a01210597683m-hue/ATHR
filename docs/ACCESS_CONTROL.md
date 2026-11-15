@@ -108,3 +108,11 @@ The schema is a foundation, not a complete operational review system. No staff c
 - No model-improvement pipeline or human reviewer console is active.
 - No owner dashboard or staff approval workflow is active.
 - Retention periods, automatic deletion, export/delete account workflows, and privacy contact details remain outstanding.
+
+
+## Final consent audit hardening
+- Users can read their own consent history but cannot insert or rewrite consent-history rows directly.
+- Signup consent is written by the trusted auth-user trigger from the signup metadata submitted by the registration flow.
+- Later model-improvement preference changes are audited by a database trigger whenever the authenticated user changes their own preference.
+- The direct user UPDATE path remains protected by RLS; the audit trigger itself is not executable through the public RPC API.
+- Security Advisor returned no findings after this hardening.
