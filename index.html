@@ -131,13 +131,42 @@ a:hover{color:#e2d9ff}
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* ATHR navigation and content hierarchy */
+#mainNavigation{
+ position:sticky;top:72px;z-index:15;display:flex;justify-content:center;gap:10px;
+ padding:10px 14px;background:rgba(9,13,34,.72);border-bottom:1px solid rgba(185,169,255,.10);
+ backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)
+}
+#mainNavigation a{
+ display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 17px;
+ color:#dcd6ff;text-decoration:none;font-size:13px;font-weight:700;
+ border:1px solid rgba(185,169,255,.17);border-radius:999px;background:rgba(30,38,82,.42);
+ transition:background .2s ease,border-color .2s ease,transform .2s ease
+}
+#mainNavigation a:hover{background:rgba(112,91,220,.24);border-color:rgba(190,174,255,.5);transform:translateY(-1px)}
+.section-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin:10px 0 18px}
+.section-heading .section-title{margin:0}
+.section-heading p{max-width:430px;margin:0;color:var(--muted);font-size:13px;line-height:1.8}
+#services{scroll-margin-top:140px}
+#languageCenter,#authPanel{scroll-margin-top:140px}
+@media(max-width:600px){
+ #mainNavigation{top:68px;justify-content:flex-start;overflow-x:auto;white-space:nowrap;scrollbar-width:none;padding:9px 12px}
+ #mainNavigation::-webkit-scrollbar{display:none}
+ #mainNavigation a{flex:0 0 auto;padding:8px 14px;font-size:12px}
+ .section-heading{display:block;margin:12px 0 16px}
+ .section-heading p{margin-top:8px}
+}
+
 </style></head>
 <body>
 <header><div class="brand"><div class="mark">أ</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
+<nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
 <div class="core-wrap"><div class="core" aria-label="العقل المركزي"><span>أثر</span></div></div>
-<section class="grid" id="services">
+<div class="section-heading"><h2 class="section-title">مساحات ATHR</h2><p>استكشف المجالات المتاحة في رؤية ATHR. الخدمات التي لم تُفعّل بعد ستُعلن بوضوح عند جاهزيتها.</p></div>
+<section class="grid" id="services" aria-label="مساحات وخدمات ATHR">
 <article class="card"><div class="ico">✧</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p></article>
 <article class="card"><div class="ico">◈</div><h3>العقول المتخصصة</h3><p>خبرات ذكية متخصصة تعمل معًا حسب احتياجك.</p></article>
 <article class="card"><div class="ico">⌘</div><h3>التعلّم والتطوير</h3><p>تعلّم مستمر ومسارات تناسب أهدافك.</p></article>
@@ -146,12 +175,12 @@ a:hover{color:#e2d9ff}
 <article class="card"><div class="ico">▤</div><h3>مشروعاتي وأفكاري</h3><p>نظّم أهدافك ومشروعاتك وخطواتك القادمة.</p></article>
 <article class="card"><div class="ico">◎</div><h3>العوالم التفاعلية</h3><p>مساحات معرفية متغيرة للاستكشاف والتجربة.</p></article>
 </section>
-<h2 class="section-title">مركز اللغات · الترجمة العربية دائمًا متاحة</h2>
+<h2 class="section-title" id="languageCenter">مركز اللغات · الترجمة العربية دائمًا متاحة</h2>
 <section class="language-demo"><div class="lesson"><small>ENGLISH · ORIGINAL</small><strong>Good morning, how are you?</strong><p>Listen, practice pronunciation, and explore the sentence in context.</p></div><div class="lesson"><small>الترجمة العربية</small><strong>صباح الخير، كيف حالك؟</strong><p>ترجمة واضحة مع شرح مبسط للمعنى، ويمكن إظهارها دائمًا أو عند الضغط فقط.</p></div></section>
 <div class="tools"><button class="primary" id="showArabic">إظهار / إخفاء الترجمة العربية</button><button id="speak">🔊 استمع للنطق</button></div>
 <p class="note">نسخة تصورية أولية للواجهة — لا تتضمن بعد تسجيل الدخول أو خدمات الذكاء الاصطناعي أو حفظ البيانات.</p>
 
-<section class="section-title" style="margin-top:46px">حسابك وخصوصيتك · Your account & privacy</section>
+<h2 class="section-title" style="margin-top:46px">حسابك وخصوصيتك · Your account & privacy</h2>
 <section class="card" id="authPanel" aria-live="polite">
   <div id="signedOutView">
     <h3>ابدأ حساب ATHR</h3>
