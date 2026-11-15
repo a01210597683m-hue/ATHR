@@ -35,11 +35,13 @@ ATHR is an Arabic-first, multilingual AI ecosystem designed to help people think
 
 ## Not yet production-ready
 - The owner account has not yet been assigned a protected owner role.
-- The owner/admin dashboard and reviewer console are not implemented.
+- A first owner-only dashboard shell is connected to the deployed `athr-owner-overview` Edge Function; it shows aggregate account and review counts only.
+- The owner role is not yet assigned, so the dashboard remains hidden until the verified owner account is provisioned server-side.
+- The reviewer console and operational review workflow are not implemented.
 - No human-review team workflow or model-training/improvement pipeline is active.
 - Supabase Auth email confirmation, password recovery, allowed redirect URLs, and production email templates still need configuration and end-to-end testing.
 - Data export/deletion, retention automation, storage policies, and legal review are outstanding.
-- No live production deployment has been verified.
+- No live production frontend deployment or real-account end-to-end test has been verified.
 
 See `docs/PRIVACY_NOTICE_AR.md`, `docs/TERMS_OF_SERVICE_AR.md`, and `docs/ACCESS_CONTROL.md`.
 
