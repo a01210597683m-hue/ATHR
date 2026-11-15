@@ -204,13 +204,37 @@ a:hover{color:#e2d9ff}
  .chat-composer{margin:0 12px}
 }
 
+
+/* ATHR signature monogram: luminous, legible A */
+.mark.brand-mark-a{
+ font-family:Arial,Helvetica,sans-serif;font-size:27px;font-weight:900;letter-spacing:-2px;
+ color:#fff4d6;text-shadow:0 0 8px rgba(255,244,214,.95),0 0 20px rgba(184,157,255,.8);
+ border:1px solid rgba(244,215,157,.5);
+ background:radial-gradient(circle at 35% 25%,rgba(255,246,221,.28),rgba(151,117,255,.24) 48%,rgba(13,20,57,.95) 100%);
+ box-shadow:0 0 18px rgba(157,126,255,.34),inset 0 0 14px rgba(255,255,255,.13)
+}
+.core .core-letter{
+ font-family:Arial,Helvetica,sans-serif;font-size:clamp(76px,11vw,104px);font-weight:900;
+ line-height:1;letter-spacing:-8px;padding-inline-end:8px;
+ color:transparent;
+ background:linear-gradient(145deg,#fffef5 5%,#f7dca5 35%,#d8c2ff 68%,#86eaff 100%);
+ -webkit-background-clip:text;background-clip:text;
+ -webkit-text-stroke:1px rgba(255,255,255,.28);
+ filter:drop-shadow(0 0 8px rgba(255,249,226,.75)) drop-shadow(0 0 23px rgba(159,130,255,.9));
+ transform:translateY(-2px);
+}
+.core{isolation:isolate}
+.core:before{box-shadow:0 0 18px rgba(137,130,255,.24)}
+.core:after{box-shadow:0 0 22px rgba(241,204,122,.20)}
+@media(prefers-reduced-motion:reduce){.core,.core:before,.core:after{animation:none!important}}
+
 </style></head>
 <body>
-<header><div class="brand"><div class="mark">أ</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
+<header><div class="brand"><div class="mark brand-mark-a" aria-label="ATHR monogram">A</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
 <nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#chatWorkspace">المساعد</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
-<div class="core-wrap"><div class="core" aria-label="العقل المركزي"><span>أثر</span></div></div>
+<div class="core-wrap"><div class="core" role="img" aria-label="شعار ATHR المتحرك بحرف A"><span class="core-letter">A</span></div></div>
 <div class="section-heading"><h2 class="section-title">مساحات ATHR</h2><p>استكشف المجالات المتاحة في رؤية ATHR. الخدمات التي لم تُفعّل بعد ستُعلن بوضوح عند جاهزيتها.</p></div>
 <section class="grid" id="services" aria-label="مساحات وخدمات ATHR">
 <article class="card"><div class="ico">✧</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p></article>
