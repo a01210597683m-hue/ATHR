@@ -90,3 +90,21 @@ These are ATHR's selected product requirements inspired by privacy controls and 
 
 ## Important implementation boundary
 The schema is a foundation, not a complete operational review system. No staff console, reviewer identity/approval workflow, automated retention/deletion job, model-training pipeline, signup consent screen, or owner dashboard is live yet. Do not process or expose conversation transcripts for model improvement until the corresponding consent enforcement and backend workflow are implemented and tested.
+
+
+## Authentication UI and consent workflow (prototype)
+- The static prototype now includes email/password sign-up and sign-in using the browser-safe Supabase publishable key.
+- Sign-up requires acknowledgement of the privacy notice and terms; optional model-improvement consent is a separate unchecked box.
+- The auth-user trigger records the signup notice/terms acknowledgement and the optional model-improvement decision even when email confirmation means no immediate browser session.
+- Model-improvement preference changes use the authenticated `set_model_improvement_preference` database function, which updates the preference and writes a consent-history event atomically.
+- The direct user UPDATE policy on `privacy_settings` has been removed; users can read and create their row, and use the audited function to change model-improvement preference.
+- Users can submit a quality report and optionally include a specific excerpt they explicitly choose to share.
+- Wellbeing review is a separate user-initiated request requiring separate explicit consent for the exact excerpt.
+- Private staff roles and admin-action audit tables exist in `athr_private`; no owner role has been assigned yet.
+
+## Current limitations
+- Browser sign-up and consent code has been committed but not tested with a real verified email account.
+- Auth provider, email confirmation, redirect URLs, recovery emails, and production templates require dashboard configuration and testing.
+- No model-improvement pipeline or human reviewer console is active.
+- No owner dashboard or staff approval workflow is active.
+- Retention periods, automatic deletion, export/delete account workflows, and privacy contact details remain outstanding.
