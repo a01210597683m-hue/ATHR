@@ -228,6 +228,40 @@ a:hover{color:#e2d9ff}
 .core:after{box-shadow:0 0 22px rgba(241,204,122,.20)}
 @media(prefers-reduced-motion:reduce){.core,.core:before,.core:after{animation:none!important}}
 
+
+/* ATHR signature motion polish — restrained premium light, never blocks controls */
+.core{
+ background:
+  radial-gradient(circle at 50% 48%,rgba(255,255,255,.16),transparent 26%),
+  radial-gradient(circle at 38% 30%,#fff4d4 0%,#caa8ff 10%,#4230a8 34%,#111a4d 65%,#07102a 75%);
+}
+.core .core-letter{
+ background-size:220% 220%;
+ animation:athrASheen 5.8s ease-in-out infinite,athrAGlow 4.2s ease-in-out infinite;
+}
+.mark.brand-mark-a{
+ font-family:Arial,Helvetica,sans-serif;font-size:27px;font-weight:900;letter-spacing:-2px;
+ color:transparent;
+ background:linear-gradient(135deg,#fffdf3 0%,#f4d89e 32%,#d5c2ff 65%,#8ceaff 100%);
+ background-size:180% 180%;
+ -webkit-background-clip:text;background-clip:text;
+ border:1px solid rgba(244,215,157,.48);
+ text-shadow:0 0 16px rgba(191,165,255,.45);
+ box-shadow:0 0 22px rgba(157,126,255,.3),inset 0 0 14px rgba(255,255,255,.12);
+ animation:athrASheen 7s ease-in-out infinite;
+}
+@keyframes athrASheen{
+ 0%,100%{background-position:0% 50%}
+ 50%{background-position:100% 50%}
+}
+@keyframes athrAGlow{
+ 0%,100%{filter:drop-shadow(0 0 7px rgba(255,249,226,.65)) drop-shadow(0 0 18px rgba(159,130,255,.72))}
+ 50%{filter:drop-shadow(0 0 12px rgba(255,249,226,.95)) drop-shadow(0 0 30px rgba(121,223,240,.55))}
+}
+@media(prefers-reduced-motion:reduce){
+ .core,.core:before,.core:after,.core .core-letter,.mark.brand-mark-a{animation:none!important}
+}
+
 </style></head>
 <body>
 <header><div class="brand"><div class="mark brand-mark-a" aria-label="ATHR monogram">A</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
