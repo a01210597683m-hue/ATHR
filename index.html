@@ -371,6 +371,18 @@ a:hover{color:#e2d9ff}
 .chat-composer button{min-width:54px}
 #chatStatus{padding:0 18px 14px;color:var(--muted);font-size:12px}
 @media(max-width:700px){.chat-shell{grid-template-columns:1fr}.chat-sidebar{display:none}#chatMessages{max-height:360px}.chat-message{max-width:96%}}
+
+.chat-messages{display:flex;flex-direction:column;gap:10px;max-height:390px;overflow:auto;padding:12px 22px}
+.chat-message{max-width:min(82%,620px);padding:12px 15px;border-radius:15px;line-height:1.8;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-message.user{align-self:flex-start;background:rgba(128,102,233,.25);border:1px solid rgba(185,169,255,.25)}
+.chat-message.assistant{align-self:flex-end;background:rgba(24,89,105,.24);border:1px solid rgba(121,223,240,.20)}
+.chat-status{min-height:26px;margin:8px 22px;color:var(--muted);font-size:12px;line-height:1.7}
+.chat-consent{margin:8px 22px 0;padding:12px;border:1px solid rgba(185,169,255,.15);border-radius:13px;background:rgba(8,13,36,.35)}
+.chat-consent label{display:flex;gap:9px;align-items:flex-start;color:#aeb5d1;font-size:11px;line-height:1.8}
+.chat-consent input{margin-top:4px;flex:none}
+#chatBrain{width:100%;margin-top:8px}
+.chat-composer textarea{min-height:46px;max-height:150px}
+@media(max-width:700px){.chat-messages{padding:10px 13px}.chat-status,.chat-consent{margin-inline:13px}.chat-consent{margin-top:8px}.chat-message{max-width:92%}}
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
@@ -402,20 +414,26 @@ a:hover{color:#e2d9ff}
 </section>
 
 <section id="chatWorkspace" aria-labelledby="chatHeading">
- <div class="section-heading"><h2 class="section-title" id="chatHeading">مساحة المساعد الذكي</h2><p>محادثة فعلية بحسابك، مع حفظ محادثاتك الخاصة في ATHR. يلزم تسجيل الدخول وتفعيل العقل ومفتاح المحرك.</p></div>
+ <div class="section-heading"><h2 class="section-title" id="chatHeading">مساحة المساعد الذكي</h2><p>مساعد ATHR المستقل. ستعمل المحادثة عند تجهيز خادم النموذج الخاص بـ ATHR وتفعيل العقل المختار.</p></div>
  <div class="chat-shell">
   <aside class="chat-sidebar"><div class="chat-brand"><span class="chat-orb">أ</span><div><strong>ATHR Assistant</strong><small>مساحتك الذكية</small></div></div>
    <button type="button" class="chat-new" id="newChatBtn">＋ محادثة جديدة</button>
-   <div class="chat-side-label">مساحاتك</div><div class="chat-side-item active">✧ المساعد العام</div><div class="chat-side-item">◈ العقول المتخصصة</div><div class="chat-side-item">▤ مشروعاتي</div>
-   <div class="chat-side-foot">المحادثات الخاصة لا تظهر في لوحة المالكة.</div>
+   <div class="chat-side-label">العقل المستخدم</div>
+   <select id="chatBrain" aria-label="اختيار عقل ATHR">
+    <option value="central">العقل المركزي</option><option value="learning">التعلّم</option><option value="languages">اللغات</option><option value="creative">الإبداع</option><option value="wellbeing">الرفاه</option><option value="projects">المشروعات</option><option value="research">البحث والتحليل</option>
+   </select>
+   <div class="chat-side-foot">محادثاتك خاصة بحسابك. لا يوجد اتصال بمحرك ذكاء اصطناعي تابع لشركة خارجية محددة داخل كود ATHR.</div>
   </aside>
   <div class="chat-main">
-   <div class="chat-top"><div><strong>المساعد الذكي</strong><small><span class="online-dot"></span> محرك ATHR عبر OpenAI · يتطلب إعداد المفتاح</small></div><span class="chat-top-mark">ATHR ✦</span></div>
-   <div class="chat-welcome"><div class="chat-big-orb">أ</div><span class="chat-kicker">THINK · LEARN · CREATE</span><h3>أهلًا بك، نبدأ منين؟</h3><p>مساحة واحدة لأفكارك وأسئلتك وخططك. سنضيف المحادثة الفعلية بعد ربط محرك الذكاء الاصطناعي واختباره.</p>
+   <div class="chat-top"><div><strong>المساعد الذكي</strong><small><span class="online-dot"></span> محرك ATHR المستقل · قيد الإعداد</small></div><span class="chat-top-mark">ATHR ✦</span></div>
+   <div class="chat-welcome" id="chatWelcome"><div class="chat-big-orb">أ</div><span class="chat-kicker">THINK · LEARN · CREATE</span><h3>أهلًا بك، نبدأ منين؟</h3><p>اختاري العقل المناسب واكتبي رسالتك. لن تُرسل الرسائل إلى أي محرك حتى يتم إعداد خادم ATHR المستقل.</p>
     <div class="chat-prompts"><div>✧ <strong>ساعدني أفكر</strong><small>رتّب فكرة تشغل بالك</small></div><div>◈ <strong>علّمني شيئًا جديدًا</strong><small>ابدأ رحلة تعلّم</small></div><div>⌘ <strong>خطّط لمشروعي</strong><small>حوّل الهدف إلى خطوات</small></div></div>
    </div>
-   <div class="chat-composer"><textarea rows="2" disabled placeholder="اكتب رسالتك هنا… (سيُفعّل الإرسال بعد ربط المحرك)"></textarea><button type="button" disabled aria-label="إرسال الرسالة">↑</button></div>
-   <p class="chat-disclaimer">لا تكتبي بيانات حساسة في هذه المعاينة. لا يتم إرسال أو حفظ أي رسالة من هذه الواجهة.</p>
+   <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
+   <p id="chatStatus" class="chat-status" role="status">المحرك المستقل لم يتم ربطه بعد؛ لن يتم إرسال أي رسالة قبل تجهيزه.</p>
+   <div class="chat-consent"><label><input id="chatProviderConsent" type="checkbox"><span>أوافق على معالجة رسالتي والسياق اللازم للإجابة بواسطة محرك ATHR المستقل بعد تفعيله. سيتم توضيح جهة الاستضافة ومكان المعالجة ومدة الاحتفاظ قبل بدء الخدمة.</span></label></div>
+   <div class="chat-composer"><textarea id="chatInput" rows="2" placeholder="اكتبي رسالتك هنا…" aria-label="رسالتك"></textarea><button type="button" id="sendChatBtn" aria-label="إرسال الرسالة">↑</button></div>
+   <p class="chat-disclaimer">لا ترسلي كلمات مرور أو بيانات دفع أو معلومات شديدة الحساسية.</p>
   </div>
  </div>
 </section>
@@ -491,7 +509,7 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-16-v2";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v3";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
@@ -548,12 +566,17 @@ let activeConversationId=null;
 function addChatMessage(role,content){const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message "+role;el.textContent=content;host.append(el);host.scrollTop=host.scrollHeight;}
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
 async function sendChat(){
- const message=$("chatInput").value.trim();if(!message)return;if(!$("chatProviderConsent").checked){chatStatus("يلزم تأكيد موافقتك على معالجة الرسالة عبر OpenAI قبل الإرسال.",true);return;}
+ const message=$("chatInput").value.trim();if(!message)return;
+ if(!$("chatProviderConsent").checked){chatStatus("يلزم تأكيد موافقتك على معالجة الرسالة عبر محرك ATHR المستقل بعد تفعيله.",true);return;}
  const {data:{session}}=await supabase.auth.getSession();if(!session){chatStatus("سجّلي الدخول أولًا قبل إرسال الرسائل.",true);return;}
- const button=$("sendChatBtn");button.disabled=true;$("chatInput").disabled=true;addChatMessage("user",message);$("chatInput").value="";chatStatus("ATHR يفكر في إجابتك…");
+ const button=$("sendChatBtn");button.disabled=true;$("chatInput").disabled=true;chatStatus("جارٍ التحقق من جاهزية محرك ATHR…");
  const {data,error}=await supabase.functions.invoke("athr-chat",{body:{message,brain_key:$("chatBrain").value,conversation_id:activeConversationId}});
- if(error||!data?.success){const code=data?.error||error?.message||"unknown_error";const messages={openai_key_not_configured:"المحرك جاهز، لكن مفتاح OpenAI لم يُضف إلى أسرار Supabase بعد.",brain_not_enabled:"هذا العقل غير مفعّل بعد. يمكن لمالكة ATHR تفعيله من لوحة المالكة بعد إعداد المفتاح.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",openai_key_invalid:"مفتاح OpenAI غير صالح. راجعي المفتاح في أسرار Supabase.",openai_rate_or_quota_limit:"حساب OpenAI وصل إلى حد الاستخدام أو الرصيد.",ai_provider_unreachable:"تعذر الاتصال بمزود الذكاء الاصطناعي. حاولي لاحقًا."};chatStatus(messages[code]||("لم تكتمل الرسالة: "+code),true);button.disabled=false;$("chatInput").disabled=false;return;}
- activeConversationId=data.conversation_id;addChatMessage("assistant",data.reply);chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
+ if(error||!data?.success){
+  const code=data?.error||error?.message||"unknown_error";
+  const messages={engine_not_configured:"خادم الذكاء الاصطناعي المستقل لم يتم إعداده بعد. لم تُرسل رسالتك إلى أي مزود ذكاء اصطناعي.",brain_not_enabled:"هذا العقل غير مفعّل بعد. ستتمكن المالكة من تفعيله بعد تجهيز المحرك.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",inference_unreachable:"تعذر الاتصال بخادم ATHR المستقل. حاولي لاحقًا.",inference_auth_failed:"تعذر التحقق من صلاحية الاتصال بخادم ATHR.",inference_rate_limited:"خادم ATHR وصل إلى حد الاستخدام المؤقت.",conversation_brain_mismatch:"هذه المحادثة مرتبطة بعقل آخر. ابدئي محادثة جديدة لهذا العقل."};
+  chatStatus(messages[code]||("لم تكتمل الرسالة: "+code),true);button.disabled=false;$("chatInput").disabled=false;return;
+ }
+ activeConversationId=data.conversation_id;addChatMessage("user",message);addChatMessage("assistant",data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
 }
 $("sendChatBtn").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}});
 $("newChatBtn").onclick=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("بدأتِ محادثة جديدة.");};
