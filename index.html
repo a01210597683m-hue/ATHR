@@ -83,6 +83,12 @@ main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center
       </div>
       <p id="ownerRefreshTime" class="note"></p>
       <button id="refreshOwnerDashboard" class="primary" type="button">تحديث الملخص</button>
+      <div style="border-top:1px solid var(--line);margin-top:22px;padding-top:18px">
+        <h3>إدارة العقول المتخصصة</h3>
+        <p class="note">إدارة حالة كل عقل. التفعيل هنا يسجل الحالة الإدارية فقط ولا يعني أن مزود الذكاء الاصطناعي متصل وجاهز للإنتاج.</p>
+        <div id="specialistBrainsList" style="display:grid;gap:10px"></div>
+        <button id="refreshSpecialistBrains" type="button" style="margin-top:12px">تحديث قائمة العقول</button>
+      </div>
     </section>
   </div>
   <p id="authStatus" role="status" style="margin-top:12px;color:var(--cyan);font-size:13px"></p>
@@ -111,6 +117,32 @@ async function refreshOwnerDashboard(){
  $("ownerRefreshTime").textContent="آخر تحديث: "+new Date(data.generated_at).toLocaleString("ar-EG");
  panel.hidden=false;
 }
+async function loadSpecialistBrains(){
+ const host=$("specialistBrainsList");host.textContent="جارٍ تحميل العقول…";
+ const {data,error}=await supabase.functions.invoke("athr-specialist-brains",{method:"GET"});
+ if(error||!data||!Array.isArray(data.brains)){host.textContent="تعذر تحميل قائمة العقول.";return;}
+ host.textContent="";
+ for(const brain of data.brains){
+  const card=document.createElement("article");card.className="lesson";
+  const title=document.createElement("strong");title.textContent=brain.name_ar+" · "+brain.name_en;
+  const desc=document.createElement("p");desc.textContent=brain.description_ar;desc.className="note";
+  const state=document.createElement("p");state.textContent="الحالة: "+({enabled:"مفعّل إداريًا",disabled:"متوقف",maintenance:"تحت الصيانة"}[brain.status]||brain.status);
+  const select=document.createElement("select");select.setAttribute("aria-label","حالة "+brain.name_ar);
+  for(const [value,label] of [["enabled","مفعّل"],["disabled","متوقف"],["maintenance","صيانة"]]){
+   const option=document.createElement("option");option.value=value;option.textContent=label;option.selected=brain.status===value;select.append(option);
+  }
+  const save=document.createElement("button");save.type="button";save.textContent="حفظ الحالة";
+  save.disabled=brain.brain_key==="central";
+  save.onclick=async()=>{
+   save.disabled=true;status("جارٍ تحديث "+brain.name_ar+"…");
+   const result=await supabase.functions.invoke("athr-specialist-brains",{method:"POST",body:{brain_key:brain.brain_key,status:select.value}});
+   if(result.error||!result.data?.success){status("تعذر تحديث حالة العقل. "+(result.data?.error||result.error?.message||""),true);save.disabled=false;return;}
+   status("تم حفظ الحالة الإدارية للعقل "+brain.name_ar+".");await loadSpecialistBrains();
+  };
+  const row=document.createElement("div");row.className="tools";row.append(select,save);
+  card.append(title,desc,state,row);host.append(card);
+ }
+}
 async function showSession(session){
  const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;
  $("ownerControlCenter").hidden=true;if(!user)return;
@@ -119,8 +151,10 @@ async function showSession(session){
  if(a.error||b.error){status((a.error||b.error).message,true);return;}
  $("settingsModel").checked=!!a.data?.model_improvement_opt_in;$("prefLocale").value=b.data?.interface_locale||"ar";$("arabicMode").value=b.data?.arabic_translation_mode||"always";
  await refreshOwnerDashboard();
+ if(!$("ownerControlCenter").hidden)await loadSpecialistBrains();
 }
 $("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوحة المالكة…");await refreshOwnerDashboard();status("تم تحديث الملخص.");};
+$("refreshSpecialistBrains").onclick=loadSpecialistBrains;
 $("signUpBtn").onclick=async()=>{
  const email=$("authEmail").value.trim(),password=$("authPassword").value;
  if(!email||password.length<8){status("أدخلي بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",true);return;}
