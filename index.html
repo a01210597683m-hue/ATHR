@@ -158,10 +158,56 @@ a:hover{color:#e2d9ff}
  .section-heading p{margin-top:8px}
 }
 
+
+/* ATHR assistant workspace — non-connected visual prototype */
+#chatWorkspace{margin:54px 0 30px;scroll-margin-top:140px}
+.chat-shell{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:560px;overflow:hidden;border:1px solid rgba(185,169,255,.22);border-radius:26px;background:rgba(11,16,39,.88);box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.chat-sidebar{display:flex;flex-direction:column;gap:14px;padding:22px 17px;background:linear-gradient(180deg,rgba(34,39,82,.82),rgba(15,20,48,.94));border-inline-end:1px solid rgba(185,169,255,.13)}
+.chat-brand{display:flex;align-items:center;gap:11px;padding:2px 2px 18px;border-bottom:1px solid rgba(185,169,255,.13)}
+.chat-orb,.chat-big-orb{display:grid;place-items:center;border-radius:50%;color:#fff4d9;background:radial-gradient(circle at 35% 30%,#f2d69d,#9a7cf0 48%,#41417d 78%);box-shadow:0 0 28px rgba(151,124,245,.38)}
+.chat-orb{width:42px;height:42px;font-size:21px}
+.chat-brand strong,.chat-brand small,.chat-top small{display:block}
+.chat-brand strong{font-size:14px}.chat-brand small,.chat-top small{color:#aeb5d1;font-size:11px;margin-top:3px}
+.chat-new{width:100%;text-align:start;background:rgba(137,113,230,.14);border-color:rgba(185,169,255,.25)}
+.chat-side-label{font-size:11px;color:#9da6c9;font-weight:800;letter-spacing:1px;margin-top:8px}
+.chat-side-item{padding:11px 12px;border-radius:12px;color:#c8cce2;font-size:13px}
+.chat-side-item.active{background:rgba(137,113,230,.17);border:1px solid rgba(185,169,255,.18);color:#fff}
+.chat-side-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(185,169,255,.12);font-size:11px;line-height:1.8;color:#9da6c9}
+.chat-main{display:flex;flex-direction:column;min-width:0}
+.chat-top{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid rgba(185,169,255,.13)}
+.chat-top strong{font-size:15px}.chat-top-mark{font-size:12px;letter-spacing:1.8px;color:#e8d3a7;font-weight:800}
+.online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#e9c77d;margin-inline-end:5px}
+.chat-welcome{width:min(620px,100%);margin:auto;padding:35px 26px;text-align:center}
+.chat-big-orb{width:76px;height:76px;margin:0 auto 18px;font-size:36px;box-shadow:0 0 40px rgba(151,124,245,.34),0 0 85px rgba(121,223,240,.10)}
+.chat-kicker{font-size:10px;letter-spacing:2.4px;color:#c6b5ff;font-weight:800}
+.chat-welcome h3{font-size:clamp(23px,4vw,32px);margin:11px 0 8px}
+.chat-welcome>p{max-width:500px;margin:0 auto;color:#b9bfd8;font-size:13px;line-height:1.9}
+.chat-prompts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:27px;text-align:start}
+.chat-prompts>div{padding:14px 12px;border:1px solid rgba(185,169,255,.17);border-radius:15px;background:rgba(39,43,87,.40);font-size:17px;color:#e8d3a7}
+.chat-prompts strong,.chat-prompts small{display:block}
+.chat-prompts strong{font-size:12px;color:#f7f5ff;margin-top:8px}
+.chat-prompts small{font-size:10px;color:#aeb5d1;margin-top:3px}
+.chat-composer{display:flex;gap:10px;align-items:end;margin:0 22px;padding:10px;border:1px solid rgba(185,169,255,.22);border-radius:17px;background:rgba(24,29,65,.75)}
+.chat-composer textarea{flex:1;resize:none;border:0!important;background:transparent!important;min-width:0}
+.chat-composer button{width:42px;height:42px;min-height:42px;border-radius:13px;background:linear-gradient(135deg,#8d74eb,#594bb7);font-size:23px}
+.chat-disclaimer{text-align:center;color:#858eaf;font-size:10px;padding:10px 16px 15px}
+.chat-shell button:disabled,.chat-shell textarea:disabled{opacity:.7;cursor:not-allowed}
+@media(max-width:700px){
+ .chat-shell{grid-template-columns:1fr;min-height:0;border-radius:20px}
+ .chat-sidebar{display:none}
+ .chat-top{padding:15px 17px}
+ .chat-welcome{padding:34px 15px}
+ .chat-prompts{grid-template-columns:1fr;gap:8px}
+ .chat-prompts>div{display:grid;grid-template-columns:25px 1fr;align-items:center;padding:11px}
+ .chat-prompts strong{margin:0}
+ .chat-prompts small{grid-column:2}
+ .chat-composer{margin:0 12px}
+}
+
 </style></head>
 <body>
 <header><div class="brand"><div class="mark">أ</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
-<nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
+<nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#chatWorkspace">المساعد</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
 <div class="core-wrap"><div class="core" aria-label="العقل المركزي"><span>أثر</span></div></div>
@@ -175,6 +221,26 @@ a:hover{color:#e2d9ff}
 <article class="card"><div class="ico">▤</div><h3>مشروعاتي وأفكاري</h3><p>نظّم أهدافك ومشروعاتك وخطواتك القادمة.</p></article>
 <article class="card"><div class="ico">◎</div><h3>العوالم التفاعلية</h3><p>مساحات معرفية متغيرة للاستكشاف والتجربة.</p></article>
 </section>
+
+<section id="chatWorkspace" aria-labelledby="chatHeading">
+ <div class="section-heading"><h2 class="section-title" id="chatHeading">مساحة المساعد الذكي</h2><p>تصميم واجهة المحادثة القادمة. إرسال الرسائل والردود الذكية غير مفعّل في هذه النسخة.</p></div>
+ <div class="chat-shell">
+  <aside class="chat-sidebar"><div class="chat-brand"><span class="chat-orb">أ</span><div><strong>ATHR Assistant</strong><small>مساحتك الذكية</small></div></div>
+   <button type="button" class="chat-new" disabled>＋ محادثة جديدة · قريبًا</button>
+   <div class="chat-side-label">مساحاتك</div><div class="chat-side-item active">✧ المساعد العام</div><div class="chat-side-item">◈ العقول المتخصصة</div><div class="chat-side-item">▤ مشروعاتي</div>
+   <div class="chat-side-foot">المحادثات الخاصة لا تظهر في لوحة المالكة.</div>
+  </aside>
+  <div class="chat-main">
+   <div class="chat-top"><div><strong>المساعد الذكي</strong><small><span class="online-dot"></span> واجهة تجريبية · غير متصل بمحرك الردود</small></div><span class="chat-top-mark">ATHR ✦</span></div>
+   <div class="chat-welcome"><div class="chat-big-orb">أ</div><span class="chat-kicker">THINK · LEARN · CREATE</span><h3>أهلًا بك، نبدأ منين؟</h3><p>مساحة واحدة لأفكارك وأسئلتك وخططك. سنضيف المحادثة الفعلية بعد ربط محرك الذكاء الاصطناعي واختباره.</p>
+    <div class="chat-prompts"><div>✧ <strong>ساعدني أفكر</strong><small>رتّب فكرة تشغل بالك</small></div><div>◈ <strong>علّمني شيئًا جديدًا</strong><small>ابدأ رحلة تعلّم</small></div><div>⌘ <strong>خطّط لمشروعي</strong><small>حوّل الهدف إلى خطوات</small></div></div>
+   </div>
+   <div class="chat-composer"><textarea rows="2" disabled placeholder="اكتب رسالتك هنا… (سيُفعّل الإرسال بعد ربط المحرك)"></textarea><button type="button" disabled aria-label="إرسال الرسالة">↑</button></div>
+   <p class="chat-disclaimer">لا تكتبي بيانات حساسة في هذه المعاينة. لا يتم إرسال أو حفظ أي رسالة من هذه الواجهة.</p>
+  </div>
+ </div>
+</section>
+
 <h2 class="section-title" id="languageCenter">مركز اللغات · الترجمة العربية دائمًا متاحة</h2>
 <section class="language-demo"><div class="lesson"><small>ENGLISH · ORIGINAL</small><strong>Good morning, how are you?</strong><p>Listen, practice pronunciation, and explore the sentence in context.</p></div><div class="lesson"><small>الترجمة العربية</small><strong>صباح الخير، كيف حالك؟</strong><p>ترجمة واضحة مع شرح مبسط للمعنى، ويمكن إظهارها دائمًا أو عند الضغط فقط.</p></div></section>
 <div class="tools"><button class="primary" id="showArabic">إظهار / إخفاء الترجمة العربية</button><button id="speak">🔊 استمع للنطق</button></div>
