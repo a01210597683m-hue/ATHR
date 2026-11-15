@@ -73,7 +73,7 @@ RLS is enabled on all 15 tables. Private tables are accessible only through serv
 - No owner role has been assigned yet.
 - Owner/admin permissions must be granted only by a trusted server-side/service-role process after verifying the owner's account.
 - Never grant administrative rights through user-editable metadata or a public client-side field.
-- The owner dashboard and reviewer console are not implemented.
+- The first owner dashboard shell and the `athr-owner-overview` Edge Function are deployed. The endpoint requires JWT verification, then checks for an active, non-revoked `owner` role server-side. It returns aggregate counts only and logs successful dashboard access. The dashboard remains hidden until the owner role is safely provisioned. The reviewer console and operational review workflow are not implemented.
 
 ## 11. Remaining launch requirements
 - Configure and test email confirmation, password recovery, redirect URLs, and email templates in Supabase Auth.
