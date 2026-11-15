@@ -113,7 +113,7 @@ $("signInBtn").onclick=async()=>{const {data,error}=await supabase.auth.signInWi
 $("savePrefsBtn").onclick=async()=>{
  const {data:{user}}=await supabase.auth.getUser();if(!user)return status("سجّلي الدخول أولًا.",true);
  const next=$("settingsModel").checked;
- const {error:e}=await supabase.rpc("set_model_improvement_preference",{p_enabled:next,p_version:VERSION});if(e)return status(e.message,true);
+ const {error:e}=await supabase.from("privacy_settings").update({model_improvement_opt_in:next,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(e)return status(e.message,true);
  const {error:p}=await supabase.from("user_preferences").update({interface_locale:$("prefLocale").value,arabic_translation_mode:$("arabicMode").value,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(p)return status(p.message,true);
  status("تم حفظ إعداداتك.");
 };
