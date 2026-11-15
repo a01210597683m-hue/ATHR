@@ -262,13 +262,23 @@ a:hover{color:#e2d9ff}
  .core,.core:before,.core:after,.core .core-letter,.mark.brand-mark-a{animation:none!important}
 }
 
+
+/* Official animated ATHR identity, served through a fixed-asset Edge Function. */
+.athr-hero-logo{
+ display:block;width:min(340px,78vw);height:auto;max-width:100%;margin:0 auto;
+ border-radius:24px;filter:drop-shadow(0 16px 36px rgba(83,90,255,.30));
+ animation:athrLogoFloat 6s ease-in-out infinite
+}
+@keyframes athrLogoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.012)}}
+@media(max-width:600px){.athr-hero-logo{width:min(285px,82vw);border-radius:20px}}
+@media(prefers-reduced-motion:reduce){.athr-hero-logo{animation:none!important}}
 </style></head>
 <body>
 <header><div class="brand"><div class="mark brand-mark-a" aria-label="ATHR monogram">A</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
 <nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#chatWorkspace">المساعد</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
-<div class="core-wrap"><div class="core" role="img" aria-label="شعار ATHR المتحرك بحرف A"><span class="core-letter">A</span></div></div>
+<div class="core-wrap"><img class="athr-hero-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك الرسمي" width="340" height="340" fetchpriority="high"></div>
 <div class="section-heading"><h2 class="section-title">مساحات ATHR</h2><p>استكشف المجالات المتاحة في رؤية ATHR. الخدمات التي لم تُفعّل بعد ستُعلن بوضوح عند جاهزيتها.</p></div>
 <section class="grid" id="services" aria-label="مساحات وخدمات ATHR">
 <article class="card"><div class="ico">✧</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p></article>
