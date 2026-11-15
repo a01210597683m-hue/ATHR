@@ -1,0 +1,26 @@
+{
+  "id": "./",
+  "name": "ATHR — أثر",
+  "short_name": "ATHR",
+  "description": "Beyond Intelligence. Into Possibility.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#080b1d",
+  "theme_color": "#090d25",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./athr-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
