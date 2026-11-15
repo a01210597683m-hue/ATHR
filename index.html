@@ -491,7 +491,7 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-15-v1";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v2";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
@@ -548,7 +548,7 @@ let activeConversationId=null;
 function addChatMessage(role,content){const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message "+role;el.textContent=content;host.append(el);host.scrollTop=host.scrollHeight;}
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
 async function sendChat(){
- const message=$("chatInput").value.trim();if(!message)return;
+ const message=$("chatInput").value.trim();if(!message)return;if(!$("chatProviderConsent").checked){chatStatus("يلزم تأكيد موافقتك على معالجة الرسالة عبر OpenAI قبل الإرسال.",true);return;}
  const {data:{session}}=await supabase.auth.getSession();if(!session){chatStatus("سجّلي الدخول أولًا قبل إرسال الرسائل.",true);return;}
  const button=$("sendChatBtn");button.disabled=true;$("chatInput").disabled=true;addChatMessage("user",message);$("chatInput").value="";chatStatus("ATHR يفكر في إجابتك…");
  const {data,error}=await supabase.functions.invoke("athr-chat",{body:{message,brain_key:$("chatBrain").value,conversation_id:activeConversationId}});
