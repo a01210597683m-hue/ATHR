@@ -75,3 +75,18 @@ The owner dashboard must not provide a general-purpose transcript browser or unr
 
 ## Product policy note
 These are ATHR's selected product requirements inspired by privacy controls and limited human-access practices described by OpenAI. ATHR is a separate service and must publish its own accurate Privacy Policy, consent flows, retention schedule, and operational controls. Do not claim ATHR follows OpenAI's internal procedures or has equivalent safeguards until independently implemented and verified.
+
+
+## Implemented privacy and quality schema (2026-11-15)
+- `public.privacy_settings`: per-user optional model-improvement and separate wellbeing-review switches; both default to false.
+- `public.privacy_consent_events`: versioned consent/decline/withdrawal event history, visible only to the owning user through RLS.
+- `public.quality_feedback`: user-submitted issue reports; an excerpt is included only when the user chooses to share it.
+- `public.wellbeing_review_requests`: a separate user-initiated review request table; explicit separate consent is required by a database constraint.
+- `athr_private.quality_metrics_daily`: private operational metrics table.
+- `athr_private.human_review_access_log`: private log for authorized review access events.
+- New-account trigger now creates a default privacy-settings row with optional processing disabled.
+- RLS is enabled on all new public tables. Private operational tables are in a non-exposed schema and restricted to the service role.
+- Security Advisor returned no findings after this schema update.
+
+## Important implementation boundary
+The schema is a foundation, not a complete operational review system. No staff console, reviewer identity/approval workflow, automated retention/deletion job, model-training pipeline, signup consent screen, or owner dashboard is live yet. Do not process or expose conversation transcripts for model improvement until the corresponding consent enforcement and backend workflow are implemented and tested.
