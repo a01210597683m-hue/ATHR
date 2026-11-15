@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090d25"><title>ATHR — أثر</title>
+<style>
+:root{--bg:#080c22;--panel:rgba(22,30,70,.72);--line:rgba(171,163,255,.2);--gold:#f5d18a;--violet:#9a75ff;--cyan:#54d9f4;--text:#f6f4ff;--muted:#b9bdd9}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(ellipse at 50% 20%,#1b2460 0%,#0c1232 40%,#070a1c 100%);overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;inset:-30%;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 70%,rgba(102,87,255,.12),transparent 80%);animation:spin 36s linear infinite;z-index:-1}
+body:after{background:radial-gradient(circle,rgba(65,212,255,.11),transparent 55%);animation:breathe 8s ease-in-out infinite}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{50%{transform:scale(1.2);opacity:.5}}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px clamp(18px,5vw,70px);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:3px;color:var(--gold);font-size:24px}.mark{width:42px;height:42px;border:1px solid #e8c77f;border-radius:14px;display:grid;place-items:center;color:#f4d28e;font-size:27px;box-shadow:0 0 24px #9a75ff55,inset 0 0 15px #d7b66c33}
+select,button{font:inherit;color:var(--text);background:#171d48;border:1px solid var(--line);border-radius:13px;padding:10px 14px}
+main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center;padding:36px 10px 28px}.eyebrow{color:var(--cyan);letter-spacing:2px;font-size:12px}.hero h1{font-size:clamp(34px,6vw,64px);margin:10px 0;color:var(--gold);text-shadow:0 0 30px #f0c87855}.hero p{color:var(--muted);max-width:650px;margin:0 auto;line-height:1.9}
+.core-wrap{display:flex;justify-content:center;margin:26px auto 38px}.core{width:190px;height:190px;border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle at 40% 35%,#fff4d4,#caa8ff 10%,#4230a8 34%,#111a4d 65%,#07102a 75%);box-shadow:0 0 35px #8870ff88,0 0 90px #43d9f455,inset 0 0 28px #fff8;animation:float 5s ease-in-out infinite}.core:before,.core:after{content:"";position:absolute;inset:-15px;border:1px solid #8a8dff99;border-radius:50%;transform:rotateX(68deg);animation:orbit 10s linear infinite}.core:after{inset:-27px;border-color:#f1cc7a99;transform:rotateX(72deg) rotateZ(50deg);animation-direction:reverse}.core span{font-size:45px;color:#fff4d4;text-shadow:0 0 18px white}@keyframes float{50%{transform:translateY(-9px) scale(1.025)}}@keyframes orbit{to{transform:rotateX(68deg) rotateZ(360deg)}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:21px;text-align:start;backdrop-filter:blur(16px);min-height:142px;transition:.25s;box-shadow:0 12px 35px #0002}.card:hover{transform:translateY(-5px);border-color:#9b8cff;box-shadow:0 0 30px #8e75ff22}.ico{font-size:25px}.card h3{margin:12px 0 5px;font-size:18px}.card p{margin:0;color:var(--muted);font-size:13px;line-height:1.7}
+.section-title{margin:42px 0 16px;font-size:20px}.language-demo{display:grid;grid-template-columns:1fr 1fr;gap:14px}.lesson{background:var(--panel);border:1px solid var(--line);padding:20px;border-radius:18px}.lesson small{color:var(--cyan)}.lesson strong{display:block;font-size:20px;margin:10px 0}.lesson p{color:var(--muted);line-height:1.7}.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.tools button{cursor:pointer}.primary{background:linear-gradient(110deg,#7656e9,#4036a5);border-color:#aa98ff}.note{color:var(--muted);font-size:12px;margin-top:20px}
+@media(max-width:600px){header{padding:15px}.hero{padding-top:25px}.core{width:150px;height:150px}.language-demo{grid-template-columns:1fr}.card{min-height:120px}}
+</style></head>
+<body>
+<header><div class="brand"><div class="mark">أ</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
+<main>
+<section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
+<div class="core-wrap"><div class="core" aria-label="العقل المركزي"><span>أثر</span></div></div>
+<section class="grid" id="services">
+<article class="card"><div class="ico">✧</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p></article>
+<article class="card"><div class="ico">◈</div><h3>العقول المتخصصة</h3><p>خبرات ذكية متخصصة تعمل معًا حسب احتياجك.</p></article>
+<article class="card"><div class="ico">⌘</div><h3>التعلّم والتطوير</h3><p>تعلّم مستمر ومسارات تناسب أهدافك.</p></article>
+<article class="card"><div class="ico">✦</div><h3>استوديو الإبداع</h3><p>حوّل أفكارك إلى محتوى وتصميمات ومبادرات.</p></article>
+<article class="card"><div class="ico">❋</div><h3>العناية بالنفس</h3><p>مساعد نفسي ذكي داعم، مع توضيح حدود المساعدة.</p></article>
+<article class="card"><div class="ico">▤</div><h3>مشروعاتي وأفكاري</h3><p>نظّم أهدافك ومشروعاتك وخطواتك القادمة.</p></article>
+<article class="card"><div class="ico">◎</div><h3>العوالم التفاعلية</h3><p>مساحات معرفية متغيرة للاستكشاف والتجربة.</p></article>
+</section>
+<h2 class="section-title">مركز اللغات · الترجمة العربية دائمًا متاحة</h2>
+<section class="language-demo"><div class="lesson"><small>ENGLISH · ORIGINAL</small><strong>Good morning, how are you?</strong><p>Listen, practice pronunciation, and explore the sentence in context.</p></div><div class="lesson"><small>الترجمة العربية</small><strong>صباح الخير، كيف حالك؟</strong><p>ترجمة واضحة مع شرح مبسط للمعنى، ويمكن إظهارها دائمًا أو عند الضغط فقط.</p></div></section>
+<div class="tools"><button class="primary" id="showArabic">إظهار / إخفاء الترجمة العربية</button><button id="speak">🔊 استمع للنطق</button></div>
+<p class="note">نسخة تصورية أولية للواجهة — لا تتضمن بعد تسجيل الدخول أو خدمات الذكاء الاصطناعي أو حفظ البيانات.</p>
+</main>
+<script>
+const dict={ar:{dir:"rtl",welcome:"أهلًا بك في ATHR",intro:"مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي."},en:{dir:"ltr",welcome:"Welcome to ATHR",intro:"An intelligent space to think, learn, create, and turn ideas into meaningful impact."},fr:{dir:"ltr",welcome:"Bienvenue sur ATHR",intro:"Un espace intelligent pour penser, apprendre, créer et donner vie à vos idées."},es:{dir:"ltr",welcome:"Bienvenido a ATHR",intro:"Un espacio inteligente para pensar, aprender, crear y convertir ideas en impacto."},de:{dir:"ltr",welcome:"Willkommen bei ATHR",intro:"Ein intelligenter Raum zum Denken, Lernen, Gestalten und Umsetzen von Ideen."},ja:{dir:"ltr",welcome:"ATHRへようこそ",intro:"考え、学び、創造し、アイデアを価値ある形にする知的な空間。"},zh:{dir:"ltr",welcome:"欢迎来到 ATHR",intro:"一个帮助你思考、学习、创造并将想法转化为影响力的智能空间。"}};
+document.getElementById("uiLang").addEventListener("change",e=>{const d=dict[e.target.value];document.documentElement.lang=e.target.value;document.documentElement.dir=d.dir;document.getElementById("welcome").textContent=d.welcome;document.getElementById("intro").textContent=d.intro;});
+let visible=true;document.getElementById("showArabic").onclick=()=>{visible=!visible;document.querySelector(".language-demo .lesson:nth-child(2)").style.display=visible?"block":"none";};
+document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){alert("ميزة النطق غير مدعومة في هذا المتصفح");return;}const u=new SpeechSynthesisUtterance("Good morning, how are you?");u.lang="en-US";speechSynthesis.speak(u);};
+</script></body></html>
