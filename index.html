@@ -112,10 +112,8 @@ $("signUpBtn").onclick=async()=>{
 $("signInBtn").onclick=async()=>{const {data,error}=await supabase.auth.signInWithPassword({email:$("authEmail").value.trim(),password:$("authPassword").value});if(error){status(error.message,true);return;}status("تم تسجيل الدخول.");await showSession(data.session);};
 $("savePrefsBtn").onclick=async()=>{
  const {data:{user}}=await supabase.auth.getUser();if(!user)return status("سجّلي الدخول أولًا.",true);
- const {data:old,error:readErr}=await supabase.from("privacy_settings").select("model_improvement_opt_in").eq("user_id",user.id).maybeSingle();if(readErr)return status(readErr.message,true);
  const next=$("settingsModel").checked;
- const {error:e}=await supabase.from("privacy_settings").update({model_improvement_opt_in:next,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(e)return status(e.message,true);
- if(!!old?.model_improvement_opt_in!==next){try{await consent(user.id,"model_improvement",next?"accepted":"withdrawn",{version:VERSION,changed_in:"privacy_settings"});}catch(err){return status("تم تحديث الاختيار لكن تعذر تسجيل الحدث: "+err.message,true);}}
+ const {error:e}=await supabase.rpc("set_model_improvement_preference",{p_enabled:next,p_version:VERSION});if(e)return status(e.message,true);
  const {error:p}=await supabase.from("user_preferences").update({interface_locale:$("prefLocale").value,arabic_translation_mode:$("arabicMode").value,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(p)return status(p.message,true);
  status("تم حفظ إعداداتك.");
 };
