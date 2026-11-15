@@ -1,118 +1,88 @@
 # ATHR — Ownership, Access, Privacy, and Quality Review
 
-## Product-owner control
-The project owner retains administrative control through the Supabase organization and project dashboard: database schema, Auth configuration, storage, API keys, deployments, logs, backups, and project membership. The owner-facing ATHR dashboard must expose operational settings without granting routine access to private conversation content.
+**Last updated:** 2026-11-15  
+**Status:** Prototype implementation; not production-ready.
 
-## End-user data ownership
-- Each signed-in user can access and manage only rows associated with their own auth user ID.
-- Every exposed public table has Row Level Security enabled.
-- RLS policies bind access to auth.uid(); client-provided user IDs cannot grant access to another account.
-- Users can manage their own profile, preferences, learning preferences, projects, conversations, messages, and wellbeing preferences.
-- Provide clear controls to export and delete account data, subject to applicable legal and safety retention requirements.
+## 1. Project-owner control
+The project owner controls the Supabase organization/project and GitHub repository. The future owner dashboard may manage service configuration, roles, releases, aggregate quality reports, and operational settings. It must not provide unrestricted browsing or search over private conversations.
 
-## Signup notice and explicit consent
-- During registration, clearly explain in plain language what data is collected, why it is processed, how long it is retained, who may access it, and how to change privacy choices.
-- Obtain explicit, affirmative consent for optional use of eligible conversations to improve ATHR AI quality/models. Do not bundle this optional consent with acceptance of essential Terms or Privacy Policy.
-- Users must be able to change the model-improvement choice later in account privacy settings. The choice applies prospectively to new eligible content; explain any limits for data already processed.
-- Essential safety, security, abuse-prevention, support, and legal processing is separate from optional model-improvement consent and must be described separately.
-- Do not promise that no human can ever access content. Explain that a limited number of authorized, trained personnel or bound service providers may access specific content only when necessary for a defined purpose, under need-to-know access controls and logging.
+## 2. End-user data isolation
+- Every exposed table in the `public` schema has Row Level Security enabled.
+- User-owned rows are scoped to `auth.uid()`.
+- Private operational tables are in the non-exposed `athr_private` schema and restricted to the `service_role`.
+- Never place a Supabase service-role/secret key in browser code, mobile code, or the GitHub repository.
 
-## Human access — defined purposes only
-Limited authorized human access may occur only as necessary for:
-1. Investigating abuse, serious safety concerns, or security incidents.
-2. Providing user-requested support or troubleshooting a product issue.
-3. Handling legal obligations or valid legal requests.
-4. Improving model performance only when the user’s applicable data-control setting permits it.
+## 3. Signup notice and consent
+- Registration requires acknowledgement of the privacy notice and terms.
+- Optional model-improvement consent is a separate unchecked choice and is not required to create an account.
+- The auth-user trigger records the signup notice/terms acknowledgement and the user's optional model-improvement decision, including when email confirmation means no immediate browser session.
+- A user's later model-improvement preference changes are audited by a database trigger.
+- Consent-history rows are readable by the owning user but cannot be inserted or rewritten directly by client users.
+- A saved opt-in is not permission to process transcripts until the model-improvement pipeline, retention rules, reviewer controls, and consent enforcement are actually deployed.
 
-Controls:
-- Role-based access, least privilege, need-to-know approvals, time-limited access where technically possible, and immutable access logs.
-- Staff and service providers must be contractually bound to confidentiality and receive privacy/security training.
-- Minimize the content exposed; remove or mask direct identifiers when feasible.
-- Prohibit casual browsing, bulk browsing, curiosity access, and use of conversation content for marketing or advertising.
-- Define retention periods and deletion workflows; do not retain review copies indefinitely.
+## 4. Limited human access — service rules
+Potentially permissible purposes, subject to a published privacy policy and applicable law:
+1. Safety, abuse-prevention, or security investigations.
+2. User-requested support or troubleshooting.
+3. Valid legal obligations or requests.
+4. Model improvement only when the user's applicable optional setting permits it.
 
-## Owner quality dashboard
-The owner dashboard provides aggregate and de-identified operational quality reports by default, including:
-- error rates, latency, availability, and model/provider failures
-- language and translation quality metrics
-- user feedback counts and issue categories
-- safety incident counts and resolution status
-- anonymized trends and release comparisons
+Required controls before any human review is activated:
+- Authorized, trained personnel and confidentiality obligations.
+- Least-privilege role-based access and case-specific purpose.
+- Approval and time-limited access where feasible.
+- Minimum necessary content; remove direct identifiers when feasible.
+- Access logs and regular audit.
+- No casual browsing, bulk browsing, marketing use, or unrestricted owner access.
 
-The owner dashboard must not provide a general-purpose transcript browser or unrestricted search over private conversations. Users may voluntarily submit a specific conversation excerpt or report for support/quality review with a clear explanation of what will be shared and with whom.
+**Current state:** No human reviewer console or operational transcript-review workflow is active.
 
-## Separate wellbeing review system
-- Wellbeing-assistant conversations are excluded from ordinary human quality review and general owner reports by default.
-- Any exceptional review pathway for wellbeing content must be separate, narrowly scoped, justified by a defined safety/support purpose, and governed by a separate explicit notice/consent where appropriate and applicable law.
-- Do not use wellbeing conversations for general model improvement by default.
-- Do not expose wellbeing conversation text in the owner dashboard.
-- The wellbeing assistant is AI support, not a replacement for licensed professional care. Avoid collecting clinical notes or sensitive health data unless a separately reviewed, compliant design is approved.
+## 5. Owner quality reports
+The intended owner dashboard is aggregate/de-identified by default: error rates, latency, availability, language/translation issues, feedback categories, and incident counts. It must not expose a general-purpose transcript browser.
 
-## Administrative role safety
-- Never store administrator privileges in user-editable user_metadata.
-- Any future in-app owner/admin role must be granted only by a trusted server-side process using protected app_metadata or a private authorization table.
-- Never ship Supabase service-role/secret keys in browser or mobile application code.
-- The initial database foundation intentionally does not expose a client-editable admin flag or a public "manage all users" policy.
+## 6. User-submitted quality reports
+- Signed-in users can submit a quality issue.
+- An excerpt is shared only if the user explicitly selects the share option and enters the excerpt.
+- Reports are isolated to their owner under RLS.
+- The owner/reviewer workflow to triage these reports is not active yet.
 
-## Current implementation and verification
-- Seven public tables created.
-- RLS enabled on all seven.
-- Auth user trigger creates a profile and default preferences.
-- Direct RPC execution of the SECURITY DEFINER trigger function is revoked from public, anon, and authenticated roles.
-- Supabase security and health advisors returned no findings after the hardening migration.
+## 7. Separate wellbeing review
+- Wellbeing-assistant conversations are excluded from general human review and model improvement by default.
+- A user may submit a specific excerpt through a separate request form with a separate explicit consent.
+- The database requires the separate-consent flag for a wellbeing review request.
+- No automated or staff-operated wellbeing review service is active.
+- The wellbeing assistant is AI support, not a replacement for licensed professional care.
 
-## Not yet implemented
-- Signup privacy notice and separate affirmative model-improvement consent.
-- User-facing data controls and privacy settings.
-- Human review operations, staff roles, approvals, access logs, and retention automation.
-- Owner quality dashboard with aggregate-only reporting.
-- Separate wellbeing review workflow.
-- End-to-end sign-up/sign-in and RLS tests with real test accounts.
-- In-app account export/deletion workflow.
-- Owner-only in-app administration panel.
-- Storage buckets and private file policies.
-- Auth provider, redirect URL, email confirmation, and recovery configuration.
+## 8. Database implementation currently present
+Public tables (11): `profiles`, `user_preferences`, `learning_preferences`, `projects`, `conversations`, `messages`, `wellbeing_preferences`, `privacy_settings`, `privacy_consent_events`, `quality_feedback`, `wellbeing_review_requests`.
 
-## Product policy note
-These are ATHR's selected product requirements inspired by privacy controls and limited human-access practices described by OpenAI. ATHR is a separate service and must publish its own accurate Privacy Policy, consent flows, retention schedule, and operational controls. Do not claim ATHR follows OpenAI's internal procedures or has equivalent safeguards until independently implemented and verified.
+Private tables (4): `quality_metrics_daily`, `human_review_access_log`, `staff_roles`, `admin_action_log`.
 
+RLS is enabled on all 15 tables. Private tables are accessible only through service-role backend operations. The initial security advisor check after the latest hardening returned no findings.
 
-## Implemented privacy and quality schema (2026-11-15)
-- `public.privacy_settings`: per-user optional model-improvement and separate wellbeing-review switches; both default to false.
-- `public.privacy_consent_events`: versioned consent/decline/withdrawal event history, visible only to the owning user through RLS.
-- `public.quality_feedback`: user-submitted issue reports; an excerpt is included only when the user chooses to share it.
-- `public.wellbeing_review_requests`: a separate user-initiated review request table; explicit separate consent is required by a database constraint.
-- `athr_private.quality_metrics_daily`: private operational metrics table.
-- `athr_private.human_review_access_log`: private log for authorized review access events.
-- New-account trigger now creates a default privacy-settings row with optional processing disabled.
-- RLS is enabled on all new public tables. Private operational tables are in a non-exposed schema and restricted to the service role.
-- Security Advisor returned no findings after this schema update.
+## 9. Authentication prototype
+- The static HTML prototype contains email/password signup and sign-in using the browser-safe Supabase publishable key.
+- Signup requires privacy/terms acknowledgement and offers a separate optional model-improvement checkbox.
+- Users can update model-improvement preference, interface language, and Arabic translation mode.
+- Users can submit a quality report and a separate wellbeing review request.
+- Frontend JavaScript syntax was checked; duplicate HTML IDs were not found.
+- **Real signup, email confirmation, login, RLS isolation, and form submissions have not yet been tested with a real account.**
 
-## Important implementation boundary
-The schema is a foundation, not a complete operational review system. No staff console, reviewer identity/approval workflow, automated retention/deletion job, model-training pipeline, signup consent screen, or owner dashboard is live yet. Do not process or expose conversation transcripts for model improvement until the corresponding consent enforcement and backend workflow are implemented and tested.
+## 10. Owner role and administration
+- A private `staff_roles` table exists.
+- No owner role has been assigned yet.
+- Owner/admin permissions must be granted only by a trusted server-side/service-role process after verifying the owner's account.
+- Never grant administrative rights through user-editable metadata or a public client-side field.
+- The owner dashboard and reviewer console are not implemented.
 
+## 11. Remaining launch requirements
+- Configure and test email confirmation, password recovery, redirect URLs, and email templates in Supabase Auth.
+- Create and verify the owner's first account, then grant the owner role through a trusted backend process.
+- Implement the owner dashboard, reviewer approvals, and immutable/time-limited review access workflow.
+- Implement data export/deletion and retention schedules/automation.
+- Configure private storage and file policies if uploads are added.
+- Add an official privacy/support contact and complete legal review.
+- Test the full product on Android and desktop before public release.
 
-## Authentication UI and consent workflow (prototype)
-- The static prototype now includes email/password sign-up and sign-in using the browser-safe Supabase publishable key.
-- Sign-up requires acknowledgement of the privacy notice and terms; optional model-improvement consent is a separate unchecked box.
-- The auth-user trigger records the signup notice/terms acknowledgement and the optional model-improvement decision even when email confirmation means no immediate browser session.
-- Model-improvement preference changes use the authenticated `set_model_improvement_preference` database function, which updates the preference and writes a consent-history event atomically.
-- The direct user UPDATE policy on `privacy_settings` has been removed; users can read and create their row, and use the audited function to change model-improvement preference.
-- Users can submit a quality report and optionally include a specific excerpt they explicitly choose to share.
-- Wellbeing review is a separate user-initiated request requiring separate explicit consent for the exact excerpt.
-- Private staff roles and admin-action audit tables exist in `athr_private`; no owner role has been assigned yet.
-
-## Current limitations
-- Browser sign-up and consent code has been committed but not tested with a real verified email account.
-- Auth provider, email confirmation, redirect URLs, recovery emails, and production templates require dashboard configuration and testing.
-- No model-improvement pipeline or human reviewer console is active.
-- No owner dashboard or staff approval workflow is active.
-- Retention periods, automatic deletion, export/delete account workflows, and privacy contact details remain outstanding.
-
-
-## Final consent audit hardening
-- Users can read their own consent history but cannot insert or rewrite consent-history rows directly.
-- Signup consent is written by the trusted auth-user trigger from the signup metadata submitted by the registration flow.
-- Later model-improvement preference changes are audited by a database trigger whenever the authenticated user changes their own preference.
-- The direct user UPDATE path remains protected by RLS; the audit trigger itself is not executable through the public RPC API.
-- Security Advisor returned no findings after this hardening.
+## 12. Product policy note
+ATHR is a separate service. These controls are ATHR's own product requirements, inspired by general privacy and limited-access practices; they are not a claim that ATHR duplicates OpenAI's internal procedures. Publish only protections that are implemented and verified.
