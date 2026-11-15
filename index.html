@@ -71,6 +71,19 @@ main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center
       <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;color:var(--muted);font-size:13px"><input id="wellbeingConsent" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق بشكل مستقل وصريح على مشاركة هذا المقتطف المحدد للمراجعة المنفصلة، وأفهم الغرض من مشاركته.</span></label>
       <button id="submitWellbeingReview" style="margin-top:10px">إرسال طلب المراجعة المنفصلة</button>
     </div>
+    <section id="ownerControlCenter" class="card" hidden style="margin-top:22px;border-color:#e8c77f">
+      <div class="eyebrow">OWNER CONTROL CENTER</div>
+      <h3>مركز قيادة ATHR · لوحة المالكة</h3>
+      <p class="note">ملخصات تشغيلية مجمعة فقط. لا توجد هنا إمكانية لتصفح محادثات المستخدمين أو محتوى المساعد النفسي.</p>
+      <div class="grid" style="margin-top:16px">
+        <article class="lesson"><small>الحسابات</small><strong id="ownerAccounts">—</strong></article>
+        <article class="lesson"><small>بلاغات الجودة المفتوحة</small><strong id="ownerOpenReports">—</strong></article>
+        <article class="lesson"><small>طلبات المراجعة النفسية المفتوحة</small><strong id="ownerOpenWellbeing">—</strong></article>
+        <article class="lesson"><small>البلاغات خلال 7 أيام</small><strong id="ownerRecentReports">—</strong></article>
+      </div>
+      <p id="ownerRefreshTime" class="note"></p>
+      <button id="refreshOwnerDashboard" class="primary" type="button">تحديث الملخص</button>
+    </section>
   </div>
   <p id="authStatus" role="status" style="margin-top:12px;color:var(--cyan);font-size:13px"></p>
 </section>
@@ -87,13 +100,27 @@ const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_pub
 const $=id=>document.getElementById(id), VERSION="2026-11-15-v1";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
+async function refreshOwnerDashboard(){
+ const panel=$("ownerControlCenter");panel.hidden=true;
+ const {data,error}=await supabase.functions.invoke("athr-owner-overview",{method:"GET"});
+ if(error||!data||data.role!=="owner")return;
+ $("ownerAccounts").textContent=String(data.metrics.accounts);
+ $("ownerOpenReports").textContent=String(data.metrics.quality_reports_open);
+ $("ownerOpenWellbeing").textContent=String(data.metrics.wellbeing_requests_open);
+ $("ownerRecentReports").textContent=String(data.metrics.reports_last_7_days);
+ $("ownerRefreshTime").textContent="آخر تحديث: "+new Date(data.generated_at).toLocaleString("ar-EG");
+ panel.hidden=false;
+}
 async function showSession(session){
- const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;if(!user)return;
+ const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;
+ $("ownerControlCenter").hidden=true;if(!user)return;
  $("accountEmail").textContent=user.email||"";
  const [a,b]=await Promise.all([supabase.from("privacy_settings").select("model_improvement_opt_in").eq("user_id",user.id).maybeSingle(),supabase.from("user_preferences").select("interface_locale,arabic_translation_mode").eq("user_id",user.id).maybeSingle()]);
  if(a.error||b.error){status((a.error||b.error).message,true);return;}
  $("settingsModel").checked=!!a.data?.model_improvement_opt_in;$("prefLocale").value=b.data?.interface_locale||"ar";$("arabicMode").value=b.data?.arabic_translation_mode||"always";
+ await refreshOwnerDashboard();
 }
+$("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوحة المالكة…");await refreshOwnerDashboard();status("تم تحديث الملخص.");};
 $("signUpBtn").onclick=async()=>{
  const email=$("authEmail").value.trim(),password=$("authPassword").value;
  if(!email||password.length<8){status("أدخلي بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",true);return;}
