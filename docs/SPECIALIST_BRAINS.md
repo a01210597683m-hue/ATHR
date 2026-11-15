@@ -3,7 +3,7 @@
 The private registry stores ATHR's specialist brain definitions and operational state. It is not a model runtime or an LLM connection.
 
 ## Controls
-- All brains are seeded as disabled; the central coordinator is seeded enabled in the registry only after owner approval (currently its seed status is disabled and it must be enabled by an authorized owner).
+- All seven brains are seeded as disabled, including the central coordinator. The central coordinator cannot be disabled through the owner API; it must first be enabled by an authorized owner.
 - Registry is in the non-exposed `athr_private` schema; browser roles have no table privileges.
 - `athr-specialist-brains` requires a valid JWT and an active, non-revoked `owner` role.
 - GET returns the catalogue metadata only.
@@ -13,3 +13,6 @@ The private registry stores ATHR's specialist brain definitions and operational 
 
 ## Future integration
 Connect each enabled specialist to a separately tested inference adapter, capability policy, rate limits, budget controls, and evaluations before routing real user requests to it.
+
+## Website build
+A GitHub Actions workflow at `.github/workflows/deploy-pages.yml` now builds the static root page and deploys it to GitHub Pages on pushes to `main`. The repository's Pages setting must permit GitHub Actions deployment. A successful workflow run and a live page load are still required before asking the owner to test the site.
