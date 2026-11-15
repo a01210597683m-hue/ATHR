@@ -490,6 +490,15 @@ a:hover{color:#e2d9ff}
       <p id="ownerRefreshTime" class="note"></p>
       <button id="refreshOwnerDashboard" class="primary" type="button">تحديث الملخص</button>
       <div style="border-top:1px solid var(--line);margin-top:22px;padding-top:18px">
+        <h3>حالة محرك الذكاء الاصطناعي المستقل</h3>
+        <p class="note">يعرض هذا الفحص حالة إعداد الخادم دون كشف عنوانه أو أي مفاتيح سرية.</p>
+        <div class="lesson" style="margin-top:10px">
+          <strong id="ownerEngineState">جارٍ التحقق…</strong>
+          <p id="ownerEngineDetails" class="note">يتم فحص إعدادات ATHR الآمنة.</p>
+          <button id="refreshOwnerEngine" type="button">فحص المحرك</button>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--line);margin-top:22px;padding-top:18px">
         <h3>إدارة العقول المتخصصة</h3>
         <p class="note">إدارة حالة كل عقل. التفعيل هنا يسجل الحالة الإدارية فقط ولا يعني أن مزود الذكاء الاصطناعي متصل وجاهز للإنتاج.</p>
         <div id="specialistBrainsList" style="display:grid;gap:10px"></div>
@@ -509,7 +518,7 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-16-v3";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v4";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
@@ -523,6 +532,15 @@ async function refreshOwnerDashboard(){
  $("ownerRefreshTime").textContent="آخر تحديث: "+new Date(data.generated_at).toLocaleString("ar-EG");
  panel.hidden=false;
 }
+async function refreshOwnerEngine(){
+ const state=$("ownerEngineState"),details=$("ownerEngineDetails");
+ state.textContent="جارٍ التحقق…";details.textContent="فحص إعدادات خادم ATHR.";
+ const {data,error}=await supabase.functions.invoke("athr-owner-engine-status",{method:"GET"});
+ if(error||!data?.engine){state.textContent="تعذر التحقق";details.textContent="تعذر قراءة حالة إعداد المحرك. حاولي التحديث.";return;}
+ if(data.activation_ready){state.textContent="إعداد الخادم مكتمل مبدئيًا";details.textContent="نقطة الاستدلال والنموذج محددان. يلزم اختبار اتصال فعلي قبل تفعيل العقول.";}
+ else{state.textContent="المحرك غير مُعدّ بعد";details.textContent="لم تُضبط جميع إعدادات الخادم المستقل. لم يتم إرسال أي رسالة إلى مزود خارجي.";}
+}
+$("refreshOwnerEngine").onclick=refreshOwnerEngine;
 async function loadSpecialistBrains(){
  const host=$("specialistBrainsList");host.textContent="جارٍ تحميل العقول…";
  const {data,error}=await supabase.functions.invoke("athr-specialist-brains",{method:"GET"});
@@ -558,7 +576,7 @@ async function showSession(session){
  if(a.error||b.error){status((a.error||b.error).message,true);return;}
  $("settingsModel").checked=!!a.data?.model_improvement_opt_in;$("prefLocale").value=b.data?.interface_locale||"ar";$("arabicMode").value=b.data?.arabic_translation_mode||"always";
  await refreshOwnerDashboard();
- if(!$("ownerControlCenter").hidden)await loadSpecialistBrains();
+ if(!$("ownerControlCenter").hidden){await Promise.all([loadSpecialistBrains(),refreshOwnerEngine()]);}
 }
 $("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوحة المالكة…");await refreshOwnerDashboard();status("تم تحديث الملخص.");};
 $("refreshSpecialistBrains").onclick=loadSpecialistBrains;
