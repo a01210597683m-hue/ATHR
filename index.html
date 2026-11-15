@@ -495,7 +495,10 @@ a:hover{color:#e2d9ff}
         <div class="lesson" style="margin-top:10px">
           <strong id="ownerEngineState">جارٍ التحقق…</strong>
           <p id="ownerEngineDetails" class="note">يتم فحص إعدادات ATHR الآمنة.</p>
-          <button id="refreshOwnerEngine" type="button">فحص المحرك</button>
+          <div class="tools" style="margin-top:10px;flex-wrap:wrap">
+            <button id="refreshOwnerEngine" type="button">فحص الإعدادات</button>
+            <button id="testOwnerEngine" type="button" disabled>اختبار اتصال النموذج</button>
+          </div>
         </div>
       </div>
       <div style="border-top:1px solid var(--line);margin-top:22px;padding-top:18px">
@@ -518,7 +521,7 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-16-v4";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v5";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
@@ -537,10 +540,19 @@ async function refreshOwnerEngine(){
  state.textContent="جارٍ التحقق…";details.textContent="فحص إعدادات خادم ATHR.";
  const {data,error}=await supabase.functions.invoke("athr-owner-engine-status",{method:"GET"});
  if(error||!data?.engine){state.textContent="تعذر التحقق";details.textContent="تعذر قراءة حالة إعداد المحرك. حاولي التحديث.";return;}
- if(data.activation_ready){state.textContent="إعداد الخادم مكتمل مبدئيًا";details.textContent="نقطة الاستدلال والنموذج محددان. يلزم اختبار اتصال فعلي قبل تفعيل العقول.";}
+ $("testOwnerEngine").disabled=!data.activation_ready;
+ if(data.activation_ready){state.textContent="إعداد الخادم مكتمل مبدئيًا";details.textContent="نقطة الاستدلال والنموذج محددان. شغّلي اختبار الاتصال قبل تفعيل العقول.";}
  else{state.textContent="المحرك غير مُعدّ بعد";details.textContent="لم تُضبط جميع إعدادات الخادم المستقل. لم يتم إرسال أي رسالة إلى مزود خارجي.";}
 }
 $("refreshOwnerEngine").onclick=refreshOwnerEngine;
+$("testOwnerEngine").onclick=async()=>{
+ const button=$("testOwnerEngine"),state=$("ownerEngineState"),details=$("ownerEngineDetails");
+ button.disabled=true;state.textContent="جارٍ اختبار الاتصال الفعلي…";details.textContent="يُرسل اختبارًا قصيرًا إلى خادم النموذج الذي تملكه ATHR.";
+ const {data,error}=await supabase.functions.invoke("athr-owner-engine-status",{method:"POST",body:{}});
+ if(error||!data?.test?.success){state.textContent="فشل اختبار الاتصال";details.textContent="لم ينجح الاتصال. راجعي إعدادات الخادم دون مشاركة المفاتيح.";button.disabled=false;return;}
+ state.textContent="اتصال النموذج ناجح";details.textContent="رد خادم ATHR: "+data.test.reply+" — يمكن الآن الانتقال لاختبار العقل المركزي.";
+ button.disabled=false;
+};
 async function loadSpecialistBrains(){
  const host=$("specialistBrainsList");host.textContent="جارٍ تحميل العقول…";
  const {data,error}=await supabase.functions.invoke("athr-specialist-brains",{method:"GET"});
