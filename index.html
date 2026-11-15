@@ -43,8 +43,8 @@ main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center
     <h3>ابدأ حساب ATHR</h3>
     <p>إنشاء الحساب أو تسجيل الدخول. ستظهر سياسة الخصوصية وخيارات الموافقة بوضوح قبل التسجيل.</p>
     <div class="tools"><input id="authEmail" type="email" autocomplete="email" placeholder="البريد الإلكتروني" aria-label="البريد الإلكتروني"><input id="authPassword" type="password" autocomplete="new-password" placeholder="كلمة المرور" aria-label="كلمة المرور"></div>
-    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7"><input id="acceptPrivacy" type="checkbox" style="width:20px;height:20px;flex:none"><span>قرأت إشعار الخصوصية وشروط الخدمة وأوافق عليهما. أفهم أغراض المعالجة الأساسية وحقوقي.</span></label>
-    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7"><input id="optModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق اختياريًا على استخدام محادثاتي المؤهلة لتحسين جودة نماذج ATHR، وفق إعدادات وسياسات الخدمة. هذا الاختيار غير مطلوب لإنشاء الحساب ويمكن تغييره لاحقًا.</span></label>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7"><input id="acceptPrivacy" type="checkbox" style="width:20px;height:20px;flex:none"><span>قرأت إشعار الخصوصية وشروط الخدمة. أفهم أن ATHR يعالج البيانات اللازمة لتشغيل الخدمة، وقد يستخدم مراجعة آلية أو وصولًا بشريًا محدودًا ومصرحًا به عند الضرورة للسلامة والأمن والدعم والالتزامات القانونية، وفق الضوابط والسياسات. وأوافق على ذلك.</span></label>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7"><input id="optModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق اختياريًا على استخدام محادثاتي المؤهلة لتحسين جودة نماذج ATHR، وقد تخضع عيّنات محدودة لمراجعة بشرية بواسطة أشخاص مخولين وتحت التزامات سرية. هذا الاختيار غير مطلوب لإنشاء الحساب ويمكن تغييره لاحقًا من إعدادات الخصوصية.</span></label>
     <div class="tools"><button class="primary" id="signUpBtn">إنشاء حساب</button><button id="signInBtn">تسجيل الدخول</button></div>
     <p class="note">لن نفعّل استخدام المحادثات لتحسين النماذج دون موافقة اختيارية منفصلة. قد تتم معالجة محدودة لأغراض السلامة والأمن والدعم والالتزامات القانونية وفق سياسة الخدمة.</p>
   </div>
@@ -55,6 +55,22 @@ main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center
     <label style="display:block;margin-top:14px;color:var(--muted);font-size:13px">عرض الترجمة العربية<select id="arabicMode" style="display:block;margin-top:6px"><option value="always">دائمًا</option><option value="on_demand">عند الطلب</option><option value="hidden">إخفاء</option></select></label>
     <div class="tools"><button class="primary" id="savePrefsBtn">حفظ إعدادات الخصوصية</button><button id="signOutBtn">تسجيل الخروج</button></div>
     <p class="note">سحب موافقة تحسين النماذج يوقف استخدامها مستقبلًا، ولا يعني تلقائيًا حذف بيانات سبق معالجتها.</p>
+    <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px">
+      <h3>الإبلاغ عن مشكلة أو إجابة غير دقيقة</h3>
+      <label style="display:block;color:var(--muted);font-size:13px">نوع البلاغ<select id="feedbackCategory" style="display:block;margin-top:6px;width:100%"><option value="incorrect_answer">إجابة غير دقيقة</option><option value="translation">مشكلة ترجمة</option><option value="technical_issue">مشكلة تقنية</option><option value="safety">مشكلة تتعلق بالسلامة</option><option value="other">أخرى</option></select></label>
+      <textarea id="feedbackDescription" rows="3" placeholder="اشرحي المشكلة دون إضافة بيانات شخصية غير ضرورية" style="width:100%;margin-top:10px;background:#11183d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></textarea>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;color:var(--muted);font-size:13px"><input id="shareFeedbackExcerpt" type="checkbox" style="width:20px;height:20px;flex:none"><span>أريد مشاركة المقتطف الذي سأكتبه أدناه مع فريق الجودة لمراجعة هذا البلاغ فقط.</span></label>
+      <textarea id="feedbackExcerpt" rows="2" placeholder="المقتطف الاختياري الذي توافق على مشاركته" style="width:100%;margin-top:8px;background:#11183d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></textarea>
+      <button id="submitFeedback" style="margin-top:10px">إرسال البلاغ</button>
+    </div>
+    <div style="border-top:1px solid var(--line);margin-top:20px;padding-top:16px">
+      <h3>طلب مراجعة منفصلة للمساعد النفسي</h3>
+      <p class="note">لا تدخل محادثات المساعد النفسي في المراجعة العامة. يمكنك إرسال مقتطف محدد بنفسك لطلب مراجعة منفصلة.</p>
+      <textarea id="wellbeingReason" rows="2" placeholder="سبب طلب المراجعة" style="width:100%;margin-top:8px;background:#11183d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></textarea>
+      <textarea id="wellbeingExcerpt" rows="3" placeholder="اكتبي فقط المقتطف الذي تريدين مشاركته" style="width:100%;margin-top:8px;background:#11183d;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></textarea>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;color:var(--muted);font-size:13px"><input id="wellbeingConsent" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق بشكل مستقل وصريح على مشاركة هذا المقتطف المحدد للمراجعة المنفصلة، وأفهم الغرض من مشاركته.</span></label>
+      <button id="submitWellbeingReview" style="margin-top:10px">إرسال طلب المراجعة المنفصلة</button>
+    </div>
   </div>
   <p id="authStatus" role="status" style="margin-top:12px;color:var(--cyan);font-size:13px"></p>
 </section>
@@ -104,6 +120,23 @@ $("savePrefsBtn").onclick=async()=>{
  status("تم حفظ إعداداتك.");
 };
 $("signOutBtn").onclick=async()=>{const {error}=await supabase.auth.signOut();if(error)return status(error.message,true);status("تم تسجيل الخروج.");await showSession(null);};
+$("submitFeedback").onclick=async()=>{
+ const {data:{user}}=await supabase.auth.getUser();if(!user)return status("سجّلي الدخول أولًا.",true);
+ const description=$("feedbackDescription").value.trim(),share=$("shareFeedbackExcerpt").checked,excerpt=$("feedbackExcerpt").value.trim();
+ if(!description)return status("اكتبي وصف المشكلة أولًا.",true);
+ if(share&&!excerpt)return status("أضيفي المقتطف الذي توافقين على مشاركته أو ألغِي خيار المشاركة.",true);
+ const {error}=await supabase.from("quality_feedback").insert({user_id:user.id,category:$("feedbackCategory").value,description,shared_excerpt:share?excerpt:null,explicit_content_share:share});
+ if(error)return status(error.message,true);
+ $("feedbackDescription").value="";$("feedbackExcerpt").value="";$("shareFeedbackExcerpt").checked=false;status("وصل بلاغك. شكرًا لمساعدتنا على تحسين ATHR.");
+};
+$("submitWellbeingReview").onclick=async()=>{
+ const {data:{user}}=await supabase.auth.getUser();if(!user)return status("سجّلي الدخول أولًا.",true);
+ const reason=$("wellbeingReason").value.trim(),excerpt=$("wellbeingExcerpt").value.trim();
+ if(!reason||!excerpt||!$("wellbeingConsent").checked)return status("يلزم سبب ومقتطف وموافقة مستقلة صريحة لإرسال الطلب.",true);
+ const {error}=await supabase.from("wellbeing_review_requests").insert({user_id:user.id,reason,shared_excerpt:excerpt,separate_explicit_consent:true,consent_version:VERSION});
+ if(error)return status(error.message,true);
+ $("wellbeingReason").value="";$("wellbeingExcerpt").value="";$("wellbeingConsent").checked=false;status("تم إرسال طلبك للمراجعة المنفصلة.");
+};
 supabase.auth.onAuthStateChange((_e,s)=>{showSession(s);});
 const {data:{session}}=await supabase.auth.getSession();await showSession(session);
 </script>
