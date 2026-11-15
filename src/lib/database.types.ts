@@ -115,6 +115,57 @@ export type Database = {
           },
         ]
       }
+      privacy_consent_events: {
+        Row: {
+          consent_type: string
+          consent_version: string
+          created_at: string
+          decision: string
+          id: string
+          notice_snapshot: Json
+          user_id: string
+        }
+        Insert: {
+          consent_type: string
+          consent_version: string
+          created_at?: string
+          decision: string
+          id?: string
+          notice_snapshot?: Json
+          user_id: string
+        }
+        Update: {
+          consent_type?: string
+          consent_version?: string
+          created_at?: string
+          decision?: string
+          id?: string
+          notice_snapshot?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      privacy_settings: {
+        Row: {
+          model_improvement_opt_in: boolean
+          updated_at: string
+          user_id: string
+          wellbeing_review_opt_in: boolean
+        }
+        Insert: {
+          model_improvement_opt_in?: boolean
+          updated_at?: string
+          user_id: string
+          wellbeing_review_opt_in?: boolean
+        }
+        Update: {
+          model_improvement_opt_in?: boolean
+          updated_at?: string
+          user_id?: string
+          wellbeing_review_opt_in?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -172,6 +223,39 @@ export type Database = {
         }
         Relationships: []
       }
+      quality_feedback: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          explicit_content_share: boolean
+          id: string
+          shared_excerpt: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          explicit_content_share?: boolean
+          id?: string
+          shared_excerpt?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          explicit_content_share?: boolean
+          id?: string
+          shared_excerpt?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           arabic_translation_mode: string
@@ -225,6 +309,39 @@ export type Database = {
           preferred_language?: string
           privacy_acknowledged_at?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      wellbeing_review_requests: {
+        Row: {
+          consent_version: string
+          created_at: string
+          id: string
+          reason: string
+          separate_explicit_consent: boolean
+          shared_excerpt: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          consent_version: string
+          created_at?: string
+          id?: string
+          reason: string
+          separate_explicit_consent?: boolean
+          shared_excerpt: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          consent_version?: string
+          created_at?: string
+          id?: string
+          reason?: string
+          separate_explicit_consent?: boolean
+          shared_excerpt?: string
+          status?: string
           user_id?: string
         }
         Relationships: []
