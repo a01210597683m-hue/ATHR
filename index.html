@@ -36,10 +36,77 @@ main{max-width:1180px;margin:auto;padding:34px 22px 70px}.hero{text-align:center
 <section class="language-demo"><div class="lesson"><small>ENGLISH · ORIGINAL</small><strong>Good morning, how are you?</strong><p>Listen, practice pronunciation, and explore the sentence in context.</p></div><div class="lesson"><small>الترجمة العربية</small><strong>صباح الخير، كيف حالك؟</strong><p>ترجمة واضحة مع شرح مبسط للمعنى، ويمكن إظهارها دائمًا أو عند الضغط فقط.</p></div></section>
 <div class="tools"><button class="primary" id="showArabic">إظهار / إخفاء الترجمة العربية</button><button id="speak">🔊 استمع للنطق</button></div>
 <p class="note">نسخة تصورية أولية للواجهة — لا تتضمن بعد تسجيل الدخول أو خدمات الذكاء الاصطناعي أو حفظ البيانات.</p>
+
+<section class="section-title" style="margin-top:46px">حسابك وخصوصيتك · Your account & privacy</section>
+<section class="card" id="authPanel" aria-live="polite">
+  <div id="signedOutView">
+    <h3>ابدأ حساب ATHR</h3>
+    <p>إنشاء الحساب أو تسجيل الدخول. ستظهر سياسة الخصوصية وخيارات الموافقة بوضوح قبل التسجيل.</p>
+    <div class="tools"><input id="authEmail" type="email" autocomplete="email" placeholder="البريد الإلكتروني" aria-label="البريد الإلكتروني"><input id="authPassword" type="password" autocomplete="new-password" placeholder="كلمة المرور" aria-label="كلمة المرور"></div>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7"><input id="acceptPrivacy" type="checkbox" style="width:20px;height:20px;flex:none"><span>قرأت إشعار الخصوصية وشروط الخدمة وأوافق عليهما. أفهم أغراض المعالجة الأساسية وحقوقي.</span></label>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7"><input id="optModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق اختياريًا على استخدام محادثاتي المؤهلة لتحسين جودة نماذج ATHR، وفق إعدادات وسياسات الخدمة. هذا الاختيار غير مطلوب لإنشاء الحساب ويمكن تغييره لاحقًا.</span></label>
+    <div class="tools"><button class="primary" id="signUpBtn">إنشاء حساب</button><button id="signInBtn">تسجيل الدخول</button></div>
+    <p class="note">لن نفعّل استخدام المحادثات لتحسين النماذج دون موافقة اختيارية منفصلة. قد تتم معالجة محدودة لأغراض السلامة والأمن والدعم والالتزامات القانونية وفق سياسة الخدمة.</p>
+  </div>
+  <div id="signedInView" hidden>
+    <h3 id="accountHeading">حساب ATHR</h3><p id="accountEmail"></p>
+    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:14px;color:var(--muted);font-size:13px;line-height:1.7"><input id="settingsModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>السماح اختياريًا باستخدام المحادثات المؤهلة لتحسين نماذج ATHR.</span></label>
+    <label style="display:block;margin-top:14px;color:var(--muted);font-size:13px">لغة الواجهة<select id="prefLocale" style="display:block;margin-top:6px"><option value="ar">العربية</option><option value="en">English</option></select></label>
+    <label style="display:block;margin-top:14px;color:var(--muted);font-size:13px">عرض الترجمة العربية<select id="arabicMode" style="display:block;margin-top:6px"><option value="always">دائمًا</option><option value="on_demand">عند الطلب</option><option value="hidden">إخفاء</option></select></label>
+    <div class="tools"><button class="primary" id="savePrefsBtn">حفظ إعدادات الخصوصية</button><button id="signOutBtn">تسجيل الخروج</button></div>
+    <p class="note">سحب موافقة تحسين النماذج يوقف استخدامها مستقبلًا، ولا يعني تلقائيًا حذف بيانات سبق معالجتها.</p>
+  </div>
+  <p id="authStatus" role="status" style="margin-top:12px;color:var(--cyan);font-size:13px"></p>
+</section>
 </main>
 <script>
 const dict={ar:{dir:"rtl",welcome:"أهلًا بك في ATHR",intro:"مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي."},en:{dir:"ltr",welcome:"Welcome to ATHR",intro:"An intelligent space to think, learn, create, and turn ideas into meaningful impact."},fr:{dir:"ltr",welcome:"Bienvenue sur ATHR",intro:"Un espace intelligent pour penser, apprendre, créer et donner vie à vos idées."},es:{dir:"ltr",welcome:"Bienvenido a ATHR",intro:"Un espacio inteligente para pensar, aprender, crear y convertir ideas en impacto."},de:{dir:"ltr",welcome:"Willkommen bei ATHR",intro:"Ein intelligenter Raum zum Denken, Lernen, Gestalten und Umsetzen von Ideen."},ja:{dir:"ltr",welcome:"ATHRへようこそ",intro:"考え、学び、創造し、アイデアを価値ある形にする知的な空間。"},zh:{dir:"ltr",welcome:"欢迎来到 ATHR",intro:"一个帮助你思考、学习、创造并将想法转化为影响力的智能空间。"}};
 document.getElementById("uiLang").addEventListener("change",e=>{const d=dict[e.target.value];document.documentElement.lang=e.target.value;document.documentElement.dir=d.dir;document.getElementById("welcome").textContent=d.welcome;document.getElementById("intro").textContent=d.intro;});
 let visible=true;document.getElementById("showArabic").onclick=()=>{visible=!visible;document.querySelector(".language-demo .lesson:nth-child(2)").style.display=visible?"block":"none";};
 document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){alert("ميزة النطق غير مدعومة في هذا المتصفح");return;}const u=new SpeechSynthesisUtterance("Good morning, how are you?");u.lang="en-US";speechSynthesis.speak(u);};
-</script></body></html>
+</script>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
+const $=id=>document.getElementById(id), VERSION="2026-11-15-v1";
+function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
+async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
+async function showSession(session){
+ const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;if(!user)return;
+ $("accountEmail").textContent=user.email||"";
+ const [a,b]=await Promise.all([supabase.from("privacy_settings").select("model_improvement_opt_in").eq("user_id",user.id).maybeSingle(),supabase.from("user_preferences").select("interface_locale,arabic_translation_mode").eq("user_id",user.id).maybeSingle()]);
+ if(a.error||b.error){status((a.error||b.error).message,true);return;}
+ $("settingsModel").checked=!!a.data?.model_improvement_opt_in;$("prefLocale").value=b.data?.interface_locale||"ar";$("arabicMode").value=b.data?.arabic_translation_mode||"always";
+}
+$("signUpBtn").onclick=async()=>{
+ const email=$("authEmail").value.trim(),password=$("authPassword").value;
+ if(!email||password.length<8){status("أدخلي بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",true);return;}
+ if(!$("acceptPrivacy").checked){status("يلزم تأكيد قراءة إشعار الخصوصية وشروط الخدمة.",true);return;}
+ status("جارٍ إنشاء الحساب…");const opt=$("optModel").checked;
+ const {data,error}=await supabase.auth.signUp({email,password,options:{data:{interface_language:"ar"}}});
+ if(error){status(error.message,true);return;}if(!data.user){status("لم يتم إنشاء الحساب.",true);return;}
+ try{
+  await consent(data.user.id,"privacy_notice","accepted",{version:VERSION});
+  await consent(data.user.id,"terms_notice","accepted",{version:VERSION});
+  await consent(data.user.id,"model_improvement",opt?"accepted":"declined",{version:VERSION,optional:true});
+  if(opt){const {error:e}=await supabase.from("privacy_settings").update({model_improvement_opt_in:true,updated_at:new Date().toISOString()}).eq("user_id",data.user.id);if(e)throw e;}
+ }catch(e){status("تم إنشاء الحساب، لكن تعذر حفظ سجل الموافقات بالكامل: "+e.message,true);return;}
+ status(data.session?"تم إنشاء الحساب وتسجيل الدخول.":"تم إنشاء الحساب. راجعي بريدك لتأكيد الحساب ثم سجّلي الدخول.");
+ await showSession(data.session);
+};
+$("signInBtn").onclick=async()=>{const {data,error}=await supabase.auth.signInWithPassword({email:$("authEmail").value.trim(),password:$("authPassword").value});if(error){status(error.message,true);return;}status("تم تسجيل الدخول.");await showSession(data.session);};
+$("savePrefsBtn").onclick=async()=>{
+ const {data:{user}}=await supabase.auth.getUser();if(!user)return status("سجّلي الدخول أولًا.",true);
+ const {data:old,error:readErr}=await supabase.from("privacy_settings").select("model_improvement_opt_in").eq("user_id",user.id).maybeSingle();if(readErr)return status(readErr.message,true);
+ const next=$("settingsModel").checked;
+ const {error:e}=await supabase.from("privacy_settings").update({model_improvement_opt_in:next,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(e)return status(e.message,true);
+ if(!!old?.model_improvement_opt_in!==next){try{await consent(user.id,"model_improvement",next?"accepted":"withdrawn",{version:VERSION,changed_in:"privacy_settings"});}catch(err){return status("تم تحديث الاختيار لكن تعذر تسجيل الحدث: "+err.message,true);}}
+ const {error:p}=await supabase.from("user_preferences").update({interface_locale:$("prefLocale").value,arabic_translation_mode:$("arabicMode").value,updated_at:new Date().toISOString()}).eq("user_id",user.id);if(p)return status(p.message,true);
+ status("تم حفظ إعداداتك.");
+};
+$("signOutBtn").onclick=async()=>{const {error}=await supabase.auth.signOut();if(error)return status(error.message,true);status("تم تسجيل الخروج.");await showSession(null);};
+supabase.auth.onAuthStateChange((_e,s)=>{showSession(s);});
+const {data:{session}}=await supabase.auth.getSession();await showSession(session);
+</script>
+
+</body></html>
