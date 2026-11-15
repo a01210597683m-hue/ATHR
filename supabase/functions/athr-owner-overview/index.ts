@@ -23,10 +23,18 @@ Deno.serve(async (req: Request) => {
   if (!token) return json({ error: "authentication_required" }, 401);
 
   const url = Deno.env.get("SUPABASE_URL");
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !serviceKey) return json({ error: "server_configuration_error" }, 500);
+  let secretKey = Deno.env.get("SUPABASE_SECRET_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+  if (!secretKey) {
+    try {
+      const secretKeys = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") || "{}");
+      secretKey = secretKeys.default || Object.values(secretKeys)[0] || "";
+    } catch {
+      secretKey = "";
+    }
+  }
+  if (!url || !secretKey) return json({ error: "server_configuration_error" }, 500);
 
-  const admin = createClient(url, serviceKey, {
+  const admin = createClient(url, secretKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
