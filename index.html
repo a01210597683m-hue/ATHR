@@ -324,6 +324,27 @@ a:hover{color:#e2d9ff}
 }
 @media(hover:none){#services .card:hover{transform:none}}
 
+
+/* ATHR mobile app navigation */
+#mobileTabBar{display:none}
+@media(max-width:700px){
+ body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+ #mobileTabBar{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:3px;
+  position:fixed;z-index:1000;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));
+  min-height:66px;padding:7px 6px;
+  background:rgba(13,18,43,.94);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border:1px solid rgba(185,169,255,.2);border-radius:21px;
+  box-shadow:0 12px 36px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.07)
+ }
+ #mobileTabBar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:50px;border-radius:14px;color:#cbd0e8;text-decoration:none;font-size:11px;font-weight:700;transition:background .2s,color .2s}
+ #mobileTabBar a span{display:grid;place-items:center;width:28px;height:27px;border-radius:9px;background:rgba(157,138,255,.12);font-size:18px;line-height:1}
+ #mobileTabBar a small{font-size:10px;white-space:nowrap}
+ #mobileTabBar a:active,#mobileTabBar a:focus-visible{background:rgba(157,138,255,.2);color:#fff;outline:1px solid rgba(157,138,255,.5)}
+ #mainNavigation{display:none}
+}
+@media(prefers-reduced-motion:reduce){#mobileTabBar a{transition:none}}
+
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
@@ -534,4 +555,11 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch((error) => console.warn("ATHR offline support could not be enabled:", error)));
 }
 </script>
+<nav id="mobileTabBar" aria-label="التنقل السريع">
+ <a href="#welcome" aria-label="الرئيسية"><span aria-hidden="true">⌂</span><small>الرئيسية</small></a>
+ <a href="#services" aria-label="الخدمات"><span aria-hidden="true">▦</span><small>الخدمات</small></a>
+ <a href="#chatWorkspace" aria-label="المساعد"><span aria-hidden="true">✧</span><small>المساعد</small></a>
+ <a href="#languageCenter" aria-label="اللغات"><span aria-hidden="true">🌍</span><small>اللغات</small></a>
+ <a href="#authPanel" aria-label="حسابي"><span aria-hidden="true">👤</span><small>حسابي</small></a>
+</nav>
 </body></html>
