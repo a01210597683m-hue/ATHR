@@ -273,9 +273,9 @@ a:hover{color:#e2d9ff}
 @keyframes athrLogoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.012)}}
 @media(max-width:600px){.athr-hero-logo{width:min(285px,82vw);border-radius:20px}}
 @media(prefers-reduced-motion:reduce){.athr-hero-logo{animation:none!important}}
-</style></head>
+\n/* Keep the animated brand mark consistent in the header and hero. */\n.brand-logo{display:block;width:44px;height:44px;object-fit:contain;border-radius:14px;filter:drop-shadow(0 0 14px rgba(157,126,255,.35))}\n@media(max-width:600px){.brand-logo{width:40px;height:40px}}\n</style></head>
 <body>
-<header><div class="brand"><div class="mark brand-mark-a" aria-label="ATHR monogram">A</div><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
+<header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
 <nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services">الخدمات</a><a href="#chatWorkspace">المساعد</a><a href="#languageCenter">اللغات</a><a href="#authPanel">الحساب والخصوصية</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
