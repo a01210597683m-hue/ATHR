@@ -908,7 +908,7 @@ async function loadBillingOverview(user){
 }
 async function showSession(session){
  const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;
- $("ownerControlCenter").hidden=true;if(!user){window.updateAthrPageAccess?.();return;}
+ $("ownerControlCenter").hidden=true;if(!user){activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;$("chatHistory").textContent="";const empty=document.createElement("p");empty.className="chat-history-empty";empty.textContent="سجّلي الدخول لعرض محادثاتك.";$("chatHistory").append(empty);$("chatHistoryPanel").hidden=true;$("toggleChatHistoryBtn").setAttribute("aria-expanded","false");window.updateAthrPageAccess?.();return;}
  $("accountEmail").textContent=user.email||"";
  await loadChatHistory();
  await loadBillingOverview(user);
@@ -1030,7 +1030,7 @@ async function sendChat(){
 }
 $("sendChatBtn").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}});
 $("newChatBtn").onclick=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("بدأتِ محادثة جديدة.");loadChatHistory();};
-$("chatBrain").onchange=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("اختاري العقل المناسب ثم ابدئي محادثة جديدة.");};
+$("chatBrain").onchange=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("اختاري العقل المناسب ثم ابدئي محادثة جديدة.");loadChatHistory();};
 
 $("signUpBtn").onclick=async()=>{
  const email=$("authEmail").value.trim(),password=$("authPassword").value;
