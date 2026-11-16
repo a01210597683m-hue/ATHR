@@ -45,7 +45,7 @@ jobs:
               "image type validation": 'file.type.startsWith("image/")' in page,
               "image size limit": 'file.size>10*1024*1024' in page,
               "preview URL cleanup": "URL.revokeObjectURL(athrPreviewObjectUrl)" in page,
-              "recording uses captured recorder": "const recorder=new MediaRecorder(stream)" in page and "type:recorder.mimeType" in page,
+              "recording uses captured recorder": "const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined)" in page and "type:recorder.mimeType" in page,
               "stream cleanup": "stream.getTracks().forEach(t=>t.stop())" in page,
               "voice note upload": '.storage.from("athr-assets").upload(objectPath,pending.blob' in page,
               "voice note playback": "async function renderVoiceAttachment(" in page,
