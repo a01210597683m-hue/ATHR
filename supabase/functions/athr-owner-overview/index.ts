@@ -41,17 +41,12 @@ Deno.serve(async (req: Request) => {
   const { data: authData, error: authError } = await admin.auth.getUser(token);
   if (authError || !authData.user) return json({ error: "invalid_session" }, 401);
 
-  const { data: role, error: roleError } = await admin
-    .schema("athr_private")
-    .from("staff_roles")
-    .select("role")
-    .eq("user_id", authData.user.id)
-    .eq("is_active", true)
-    .is("revoked_at", null)
-    .maybeSingle();
+  const { data: ownerAllowed, error: ownerCheckError } = await admin.rpc("athr_owner_dashboard_access", {
+    p_user_id: authData.user.id,
+  });
 
-  if (roleError) return json({ error: "authorization_check_failed" }, 500);
-  if (!role || role.role !== "owner") return json({ error: "owner_access_required" }, 403);
+  if (ownerCheckError) return json({ error: "authorization_check_failed" }, 500);
+  if (ownerAllowed !== true) return json({ error: "owner_access_required" }, 403);
 
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const [accounts, reports, openReports, wellbeing, openWellbeing, recentReports, recentWellbeing] = await Promise.all([
@@ -64,28 +59,22 @@ Deno.serve(async (req: Request) => {
     admin.from("wellbeing_review_requests").select("id", { count: "exact", head: true }).gte("created_at", since),
   ]);
 
-  const failed = [accounts, reports, openReports, wellbeing, openWellbeing, recentReports, recentWellbeing].find((r) => r.error);
-  if (failed) return json({ error: "metrics_unavailable" }, 500);
+  const metricsAvailable = ![accounts, reports, openReports, wellbeing, openWellbeing, recentReports, recentWellbeing].some((r) => r.error);
 
-  const { error: auditError } = await admin.schema("athr_private").from("admin_action_log").insert({
-    actor_user_id: authData.user.id,
-    action: "owner_dashboard_viewed",
-    target_type: "aggregate_dashboard",
-    metadata: { includes_private_conversation_content: false },
-  });
-  if (auditError) return json({ error: "audit_log_failed" }, 500);
+
 
   return json({
     role: "owner",
+    metrics_available: metricsAvailable,
     generated_at: new Date().toISOString(),
     privacy: { raw_conversations_exposed: false, wellbeing_content_exposed: false },
     metrics: {
-      accounts: accounts.count ?? 0,
-      quality_reports_total: reports.count ?? 0,
-      quality_reports_open: openReports.count ?? 0,
-      wellbeing_requests_total: wellbeing.count ?? 0,
-      wellbeing_requests_open: openWellbeing.count ?? 0,
-      reports_last_7_days: (recentReports.count ?? 0) + (recentWellbeing.count ?? 0),
+      accounts: accounts.error ? null : (accounts.count ?? 0),
+      quality_reports_total: reports.error ? null : (reports.count ?? 0),
+      quality_reports_open: openReports.error ? null : (openReports.count ?? 0),
+      wellbeing_requests_total: wellbeing.error ? null : (wellbeing.count ?? 0),
+      wellbeing_requests_open: openWellbeing.error ? null : (openWellbeing.count ?? 0),
+      reports_last_7_days: recentReports.error || recentWellbeing.error ? null : (recentReports.count ?? 0) + (recentWellbeing.count ?? 0),
     },
   });
 });
