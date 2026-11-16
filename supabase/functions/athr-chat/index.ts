@@ -70,7 +70,7 @@ Deno.serve(async (req: Request) => {
   if (rateError) return json({ error: "usage_check_failed" }, 500);
   if ((count || 0) >= 12) return json({ error: "hourly_limit_reached" }, 429);
 
-  let conversation: any;
+  let conversation: any = null;
   if (conversationId) {
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(conversationId)) return json({ error: "invalid_conversation_id" }, 400);
     const { data, error } = await db.from("conversations").select("id,assistant_type").eq("id", conversationId).eq("user_id", userId).maybeSingle();
@@ -78,30 +78,21 @@ Deno.serve(async (req: Request) => {
     if (!data) return json({ error: "conversation_not_found" }, 404);
     if (data.assistant_type !== brainKey) return json({ error: "conversation_brain_mismatch" }, 409);
     conversation = data;
-  } else {
-    const { data, error } = await db.from("conversations").insert({
-      user_id: userId, assistant_type: brainKey, interface_locale: "ar",
-      title: message.slice(0, 72),
-    }).select("id,assistant_type").single();
-    if (error || !data) return json({ error: "conversation_create_failed" }, 500);
-    conversation = data;
   }
 
-  const { data: history, error: historyError } = await db.from("messages")
-    .select("role,content").eq("conversation_id", conversation.id).eq("user_id", userId)
-    .in("role", ["user", "assistant"]).order("created_at", { ascending: false }).limit(12);
-  if (historyError) return json({ error: "history_unavailable" }, 500);
+  let history: any[] = [];
+  if (conversation) {
+    const { data, error } = await db.from("messages")
+      .select("role,content").eq("conversation_id", conversation.id).eq("user_id", userId)
+      .in("role", ["user", "assistant"]).order("created_at", { ascending: false }).limit(12);
+    if (error) return json({ error: "history_unavailable" }, 500);
+    history = data || [];
+  }
 
   const orderedHistory = (history || []).reverse().map((m: any) => ({
     role: m.role, content: String(m.content).slice(0, 6000),
   }));
   orderedHistory.push({ role: "user", content: message });
-
-  // Count attempted user messages for rate limiting even if inference later fails.
-  const { error: userSaveError } = await db.from("messages").insert({
-    conversation_id: conversation.id, user_id: userId, role: "user", content: message,
-  });
-  if (userSaveError) return json({ error: "message_save_failed" }, 500);
 
   let aiResponse: Response;
   try {
@@ -137,6 +128,20 @@ Deno.serve(async (req: Request) => {
       ? rawContent.map((part: any) => typeof part?.text === "string" ? part.text : "").join("\n").trim()
       : "";
   if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation.id }, 502);
+
+  // Persist only after inference returned a valid answer.
+  if (!conversation) {
+    const { data, error } = await db.from("conversations").insert({
+      user_id: userId, assistant_type: brainKey, interface_locale: "ar",
+      title: message.slice(0, 72),
+    }).select("id,assistant_type").single();
+    if (error || !data) return json({ error: "conversation_create_failed" }, 500);
+    conversation = data;
+  }
+  const { error: userSaveError } = await db.from("messages").insert({
+    conversation_id: conversation.id, user_id: userId, role: "user", content: message,
+  });
+  if (userSaveError) return json({ error: "message_save_failed" }, 500);
 
   const { error: assistantSaveError } = await db.from("messages").insert({
     conversation_id: conversation.id, user_id: userId, role: "assistant", content: answer,
