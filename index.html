@@ -623,6 +623,9 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
   <button type="button" id="speechInputBtn" title="تحدث لتحويل كلامك إلى كتابة" aria-label="تحويل الكلام إلى كتابة">🎙️ إملاء</button>
   <button type="button" id="voiceReplyBtn" aria-pressed="false" title="تشغيل الردود صوتيًا">🔊 الصوت: متوقف</button>
   <button type="button" id="recordNoteBtn" title="تسجيل مقطع صوتي محلي">⏺ تسجيل صوتي</button>
+  <label class="tutor-setting">لغة التعلّم <select id="tutorLanguage" aria-label="لغة التعلّم"><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="it">Italiano</option></select></label>
+  <label class="tutor-setting">المستوى <select id="tutorLevel" aria-label="مستوى اللغة"><option value="beginner">مبتدئ</option><option value="elementary">أساسي</option><option value="intermediate" selected>متوسط</option><option value="advanced">متقدم</option></select></label>
+  <label class="tutor-setting">طريقة التدريب <select id="tutorMode" aria-label="طريقة التدريب"><option value="conversation">محادثة طبيعية</option><option value="roleplay">موقف وتمثيل أدوار</option><option value="correction">تصحيح وتطوير</option></select></label>
  </div>
  <div id="chatAttachmentPreview" class="chat-attachment-preview" hidden></div>
  <div class="chat-composer"><textarea id="chatInput" rows="2" placeholder="اكتبي رسالتك هنا…" aria-label="رسالتك"></textarea><button type="button" id="sendChatBtn" aria-label="إرسال الرسالة">↑</button></div>
@@ -817,7 +820,7 @@ function startSpeechInput(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR){chatStatus("الإملاء الصوتي غير مدعوم في هذا المتصفح. جرّبي Chrome على الهاتف.",true);return;}
  if(athrRecognition){athrRecognition.stop();athrRecognition=null;return;}
- athrRecognition=new SR();athrRecognition.lang=$("chatBrain").value==="languages"?"en-US":"ar-EG";athrRecognition.interimResults=true;athrRecognition.continuous=false;
+ athrRecognition=new SR();const speechLang={en:"en-US",fr:"fr-FR",es:"es-ES",de:"de-DE",ja:"ja-JP",it:"it-IT"};athrRecognition.lang=$("chatBrain").value==="languages"?(speechLang[$("tutorLanguage").value]||"en-US"):"ar-EG";athrRecognition.interimResults=true;athrRecognition.continuous=false;
  $("speechInputBtn").textContent="⏹ إيقاف الإملاء";chatStatus("اتكلمي الآن، وسيظهر كلامك مكتوبًا…");
  athrRecognition.onresult=e=>{let finalText="",interim="";for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}if(finalText)$("chatInput").value=($("chatInput").value+" "+finalText).trim();if(interim)chatStatus("أسمعك: "+interim);};
  athrRecognition.onerror=e=>chatStatus("تعذر الإملاء الصوتي: "+e.error,true);
@@ -839,7 +842,7 @@ async function sendChat(){
  const message=$("chatInput").value.trim();if(!message)return;
  const {data:{session}}=await supabase.auth.getSession();if(!session){chatStatus("سجّلي الدخول أولًا قبل إرسال الرسائل.",true);return;}
  const button=$("sendChatBtn");button.disabled=true;$("chatInput").disabled=true;chatStatus("جارٍ التحقق من جاهزية محرك ATHR…");
- const {data,error}=await supabase.functions.invoke("athr-chat",{body:{message,brain_key:$("chatBrain").value,conversation_id:activeConversationId}});
+ const {data,error}=await supabase.functions.invoke("athr-chat",{body:{message,brain_key:$("chatBrain").value,conversation_id:activeConversationId,tutor:$("chatBrain").value==="languages"?{target_language:$("tutorLanguage").value,level:$("tutorLevel").value,mode:$("tutorMode").value}:undefined}});
  if(error||!data?.success){
   let code=data?.error;
   if(!code&&error?.context&&typeof error.context.json==="function"){
