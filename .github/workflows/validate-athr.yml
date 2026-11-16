@@ -54,6 +54,23 @@ jobs:
               raise SystemExit("Media/error-path checks failed: " + ", ".join(failed))
           print("Media preview lifecycle and inference error-path checks passed.")
           PY
+      - name: Check request payload validation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          api = Path("supabase/functions/athr-chat/index.ts").read_text(encoding="utf-8")
+          checks = {
+              "JSON content type required": 'error: "content_type_invalid"' in api,
+              "declared body size capped": 'declaredLength > 65536' in api,
+              "actual body bytes capped": 'byteLength > 65536' in api,
+              "JSON parse errors handled": 'error: "invalid_json"' in api,
+              "non-object JSON rejected": 'Array.isArray(body)' in api and 'error: "request_body_invalid"' in api,
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit("Request validation checks failed: " + ", ".join(failed))
+          print("Request payload validation checks passed.")
+          PY
       - name: Check JavaScript syntax
         run: |
           for file in /tmp/athr-inline-scripts/*.mjs; do
