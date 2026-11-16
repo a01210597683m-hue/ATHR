@@ -521,19 +521,37 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-16-v5";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v6";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
- const panel=$("ownerControlCenter");panel.hidden=true;
- const {data,error}=await supabase.functions.invoke("athr-owner-overview",{method:"GET"});
- if(error||!data||data.role!=="owner")return;
- $("ownerAccounts").textContent=String(data.metrics.accounts);
- $("ownerOpenReports").textContent=String(data.metrics.quality_reports_open);
- $("ownerOpenWellbeing").textContent=String(data.metrics.wellbeing_requests_open);
- $("ownerRecentReports").textContent=String(data.metrics.reports_last_7_days);
- $("ownerRefreshTime").textContent="آخر تحديث: "+new Date(data.generated_at).toLocaleString("ar-EG");
- panel.hidden=false;
+ const panel=$("ownerControlCenter");
+ panel.hidden=true;
+ status("جارٍ التحقق من صلاحية المالكة…");
+ try{
+  const {data,error}=await supabase.functions.invoke("athr-owner-overview",{method:"GET"});
+  if(error){
+   status("تعذر التحقق من صلاحية لوحة المالكة. أعيدي المحاولة بعد قليل.",true);
+   return;
+  }
+  if(!data||data.role!=="owner"){
+   status("هذا الحساب لا يملك صلاحية لوحة المالكة.",true);
+   return;
+  }
+  // Reveal the owner-only shell immediately after the server verifies the role.
+  // Aggregate metrics are optional and must never determine authorization or visibility.
+  panel.hidden=false;
+  const metrics=data.metrics||{};
+  $("ownerAccounts").textContent=metrics.accounts==null?"غير متاح":String(metrics.accounts);
+  $("ownerOpenReports").textContent=metrics.quality_reports_open==null?"غير متاح":String(metrics.quality_reports_open);
+  $("ownerOpenWellbeing").textContent=metrics.wellbeing_requests_open==null?"غير متاح":String(metrics.wellbeing_requests_open);
+  $("ownerRecentReports").textContent=metrics.reports_last_7_days==null?"غير متاح":String(metrics.reports_last_7_days);
+  $("ownerRefreshTime").textContent="آخر تحديث: "+new Date(data.generated_at||Date.now()).toLocaleString("ar-EG")+
+   (data.metrics_available===false?" · بعض الإحصائيات غير متاحة مؤقتًا":"");
+  status("تم التحقق من صلاحية المالكة.");
+ }catch(e){
+  status("حدث خطأ أثناء تحميل لوحة المالكة. لم يتم تغيير صلاحيات الحساب.",true);
+ }
 }
 async function refreshOwnerEngine(){
  const state=$("ownerEngineState"),details=$("ownerEngineDetails");
