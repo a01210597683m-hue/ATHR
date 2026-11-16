@@ -41,8 +41,16 @@ Deno.serve(async (req: Request) => {
   if (authError || !authData.user) return json({ error: "invalid_session" }, 401);
   const userId = authData.user.id;
 
+  const contentType = req.headers.get("Content-Type") || "";
+  if (!/^application\\/json(?:\\s*;|$)/i.test(contentType)) return json({ error: "content_type_invalid" }, 415);
+  const declaredLength = Number(req.headers.get("Content-Length") || 0);
+  if (Number.isFinite(declaredLength) && declaredLength > 65536) return json({ error: "request_too_large" }, 413);
+  let rawBody = "";
+  try { rawBody = await req.text(); } catch { return json({ error: "invalid_body" }, 400); }
+  if (new TextEncoder().encode(rawBody).byteLength > 65536) return json({ error: "request_too_large" }, 413);
   let body: any;
-  try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  try { body = JSON.parse(rawBody); } catch { return json({ error: "invalid_json" }, 400); }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "request_body_invalid" }, 400);
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const brainKey = typeof body.brain_key === "string" ? body.brain_key : "central";
   const conversationId = typeof body.conversation_id === "string" ? body.conversation_id : "";
