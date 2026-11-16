@@ -12,7 +12,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const prompts: Record<string, string> = {
   central: "أنت المساعد المركزي في ATHR. ساعد المستخدم بالعربية الواضحة أو بلغته، وكن دقيقًا وعمليًا. لا تدّع تنفيذ أفعال لم تنفذها، واذكر حدود معرفتك عند الحاجة.",
   learning: "أنت عقل التعلّم في ATHR. اشرح تدريجيًا، اختبر الفهم بأسئلة قصيرة، وكيّف الشرح مع مستوى المتعلم. لا تختلق مصادر.",
-  languages: "أنت عقل اللغات في ATHR. ساعد في الترجمة والنطق والقواعد والاستعمال الطبيعي، وأظهر المعنى العربي بوضوح عند الحاجة.",
+  languages: "أنت مدرّب لغات ATHR الشخصي. أدر محادثة حقيقية ودافئة باللغة المستهدفة، وكيّف طول الجمل والمفردات مع مستوى المتعلم. لا تحوّل كل رد إلى درس نظري. شجّع المتعلم على الرد، وصحّح الأخطاء المهمة بلطف مع عرض الصياغة الصحيحة وسبب مختصر ومثال طبيعي. إذا أرسل المتعلم جملة صحيحة فلا تخترع خطأ. استخدم العربية لشرح التصحيح عند الحاجة، ثم ارجع للمحادثة باللغة المستهدفة. في تمثيل الأدوار التزم بالشخصية والموقف، واسأل سؤالًا واحدًا في كل مرة. لا تدّع تقييم النطق من النص وحده؛ يمكن تقديم ملاحظات نطق عامة فقط.",
   creative: "أنت عقل الإبداع في ATHR. ساعد في توليد الأفكار وتطويرها إلى مخرجات عملية، مع احترام طلبات المستخدم وحقوق الملكية.",
   wellbeing: "أنت مساعد رفاه عام في ATHR. كن داعمًا وغير حُكمي، وقدّم معلومات عامة وتمارين بسيطة فقط. لا تشخّص ولا تستبدل المختصين، وتعامل مع الخطر العاجل بجدية.",
   projects: "أنت عقل المشروعات في ATHR. حوّل الأهداف إلى نطاق ومراحل ومهام ومخاطر ومؤشرات تقدم قابلة للقياس.",
@@ -46,6 +46,12 @@ Deno.serve(async (req: Request) => {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const brainKey = typeof body.brain_key === "string" ? body.brain_key : "central";
   const conversationId = typeof body.conversation_id === "string" ? body.conversation_id : "";
+  const tutor = body.tutor && typeof body.tutor === "object" ? body.tutor : {};
+  const targetLanguage = typeof tutor.target_language === "string" && ["en","fr","es","de","ja","it"].includes(tutor.target_language) ? tutor.target_language : "en";
+  const tutorLevel = typeof tutor.level === "string" && ["beginner","elementary","intermediate","advanced"].includes(tutor.level) ? tutor.level : "intermediate";
+  const tutorMode = typeof tutor.mode === "string" && ["conversation","roleplay","correction"].includes(tutor.mode) ? tutor.mode : "conversation";
+  const languageNames: Record<string,string> = {en:"English",fr:"French",es:"Spanish",de:"German",ja:"Japanese",it:"Italian"};
+  const tutorInstruction = brainKey === "languages" ? `\n\nSession settings: target language=${languageNames[targetLanguage]}, learner level=${tutorLevel}, practice mode=${tutorMode}. Keep the conversation primarily in ${languageNames[targetLanguage]}. In roleplay mode, begin or continue a realistic scenario. In correction mode, prioritize correcting the learner language errors. Ask only one clear follow-up question at a time.` : "";
   if (!message || message.length > 6000) return json({ error: "message_length_invalid" }, 400);
   if (!Object.hasOwn(prompts, brainKey)) return json({ error: "unknown_brain" }, 400);
 
@@ -103,7 +109,7 @@ Deno.serve(async (req: Request) => {
       headers,
       body: JSON.stringify({
         model: inferenceModel,
-        messages: [{ role: "system", content: prompts[brainKey] }, ...orderedHistory],
+        messages: [{ role: "system", content: prompts[brainKey] + tutorInstruction }, ...orderedHistory],
         temperature: 0.7,
         max_tokens: 900,
         stream: false,
