@@ -397,7 +397,148 @@ a:hover{color:#e2d9ff}
 #page-owner #ownerControlCenter{margin-top:0!important}
 #page-brains .room-card,#page-learning .room-card,#page-projects .room-card,#page-creative .room-card,#page-care .room-card,#page-worlds .room-card{margin-top:12px}
 @media(max-width:700px){.app-page{min-height:65vh;padding:12px 0 24px}.app-page-title{margin:8px 0 18px}}
-</style></head>
+\n
+/* ATHR complete app-shell refinement — compact, responsive, functional-first */
+:root{
+ --app-bg:#090d20;--app-surface:#111832;--app-surface-2:#151f3d;
+ --app-border:rgba(178,168,255,.16);--app-accent:#a895ff;--app-gold:#efd39d;
+ --app-muted:#aeb8d2;--app-radius:18px;
+}
+body{background:radial-gradient(ellipse at 50% -15%,rgba(116,94,225,.17),transparent 48%),linear-gradient(150deg,#080c1c,#0c1430 55%,#090d20);min-height:100dvh}
+header{min-height:66px;padding:10px clamp(14px,3vw,36px);background:rgba(8,12,29,.88);border-bottom:1px solid var(--app-border)}
+.brand{font-size:18px;letter-spacing:2px}.brand-logo{width:38px;height:38px}
+header select{min-width:108px;min-height:38px;padding:7px 11px;font-size:12px;border-radius:11px}
+#mainNavigation{top:66px;gap:7px;padding:8px 14px;background:rgba(10,15,35,.86)}
+#mainNavigation a{min-height:37px;padding:7px 13px;font-size:12px;border-radius:12px}
+#mainNavigation a>span{width:21px;height:21px;font-size:12px}
+#mainNavigation a.active,#mobileTabBar a.active{background:rgba(153,130,255,.22);border-color:rgba(177,158,255,.42);color:#fff}
+main{width:min(1440px,100%);padding:24px clamp(13px,2.5vw,30px) 48px}
+.app-page{width:100%;min-height:calc(100dvh - 155px);animation:athrPageIn .22s ease both}
+.app-page[hidden]{display:none!important}
+.app-page-title{font-size:clamp(21px,3vw,28px);font-weight:800;margin:10px 0 22px;letter-spacing:-.02em}
+@keyframes athrPageIn{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.section-heading{margin:8px 0 18px}
+.section-heading .section-title{font-size:19px}
+#chatWorkspace{margin:0;scroll-margin-top:90px}
+#chatWorkspace>.section-heading{margin:0 0 15px}
+#chatWorkspace>.section-heading p{font-size:12px;max-width:520px}
+.chat-shell{grid-template-columns:220px minmax(0,1fr);min-height:min(690px,calc(100dvh - 180px));border-radius:22px;background:rgba(10,15,35,.91);border-color:var(--app-border)}
+.chat-sidebar{gap:12px;padding:18px 14px;background:linear-gradient(180deg,rgba(24,31,65,.94),rgba(13,19,42,.98))}
+.chat-brand{padding-bottom:13px}.chat-new{min-height:39px;font-size:12px;padding:8px 11px}
+.chat-side-label{font-size:10px;margin-top:4px}
+#chatBrain{width:100%;min-height:39px;font-size:12px;padding:8px 10px}
+.chat-side-foot{font-size:10px;line-height:1.75}
+.chat-top{padding:14px 19px}.chat-top strong{font-size:14px}.chat-top small{font-size:10px}
+.chat-welcome{padding:26px 22px}
+.chat-big-orb{width:64px;height:64px;font-size:29px;margin-bottom:14px}
+.chat-welcome h3{font-size:clamp(21px,3vw,28px);margin:9px 0 7px}
+.chat-welcome>p{font-size:12px;line-height:1.8}
+.chat-prompts{gap:8px;margin-top:20px}
+.chat-prompts>div{padding:12px 10px;border-radius:13px;font-size:15px}
+.chat-prompts strong{font-size:11px}.chat-prompts small{font-size:9px}
+.chat-messages{flex:1;min-height:80px;max-height:34vh;overflow:auto;padding:0 20px}
+.chat-message{max-width:min(760px,88%);padding:11px 14px;margin:8px 0;border:1px solid var(--app-border);border-radius:15px;background:rgba(30,39,75,.76);font-size:13px;line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere}
+.chat-message.user{margin-inline-start:auto;background:rgba(109,87,204,.24);border-color:rgba(167,145,255,.25)}
+.chat-status{font-size:11px;padding:7px 16px;margin:5px 0;color:var(--app-muted)}
+.chat-consent{margin:0 18px 9px;padding:10px 12px;border:1px solid var(--app-border);border-radius:12px;background:rgba(19,26,53,.55)}
+.chat-consent label{display:flex;gap:9px;align-items:flex-start;font-size:10px;line-height:1.7;color:var(--app-muted)}
+.chat-composer{margin:0 18px;padding:8px;border-radius:14px}
+.chat-composer textarea{font-size:13px;min-height:42px;max-height:130px}
+.chat-composer button{width:39px;height:39px;min-height:39px}
+.chat-disclaimer{font-size:9px;padding:8px 12px 12px}
+#services{grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+#services .card{min-height:158px;padding:17px;border-radius:17px}
+#services .ico{width:45px;height:45px;border-radius:14px;font-size:23px}
+#services .card h3{font-size:15px;margin:11px 0 4px}
+#services .card p{font-size:11px;line-height:1.7}
+#services .service-tag{font-size:9px;padding-top:9px}
+.room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.room-card{display:flex;gap:14px;align-items:flex-start;padding:17px;border:1px solid var(--app-border);border-radius:17px;background:linear-gradient(145deg,rgba(25,33,68,.88),rgba(14,20,44,.92));min-width:0}
+.room-icon{width:43px;height:43px;flex:none;display:grid;place-items:center;border-radius:13px;background:rgba(157,138,255,.13);font-size:21px}
+.room-copy{min-width:0}.room-copy h3{font-size:14px;margin:5px 0}.room-copy p{font-size:11px;color:var(--app-muted);line-height:1.75;margin:0 0 7px}.room-copy small{font-size:10px;color:#9ba7c9;line-height:1.6}.room-status{font-size:9px;color:var(--app-gold);font-weight:800}
+#page-languages .language-demo{grid-template-columns:repeat(2,minmax(0,1fr))}
+#page-languages .lesson{padding:19px;border-radius:17px}
+#page-languages .tools{margin-top:13px}
+#page-account #authPanel{margin:0;max-width:980px}
+#page-account #signedInView{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+#page-account #signedInView>h3,#page-account #signedInView>p,#page-account #ownerControlCenter{grid-column:1/-1}
+#page-account #signedInView>div[style*="border-top"]{min-width:0}
+#page-account #ownerControlCenter .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+#page-owner #ownerControlCenter{display:block!important;margin:0!important;max-width:1100px}
+#page-owner #ownerControlCenter[hidden]{display:none!important}
+#page-owner #ownerControlCenter .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+#page-owner #specialistBrainsList{grid-template-columns:repeat(2,minmax(0,1fr))}
+#page-brains .room-card,#page-learning .room-card,#page-projects .room-card,#page-creative .room-card,#page-care .room-card,#page-worlds .room-card{max-width:900px}
+#authPanel{border-radius:19px}
+#authPanel h3{font-size:16px}
+#authPanel .note{font-size:10px}
+button,select,input,textarea{font-size:12px}
+button{min-height:39px;padding:8px 13px;border-radius:11px}
+input:not([type=checkbox]),textarea,select{border-radius:11px}
+@media(max-width:760px){
+ body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+ header{min-height:58px;padding:8px 13px}
+ .brand{font-size:16px;gap:8px}.brand-logo{width:34px;height:34px}
+ header select{min-width:94px;min-height:35px;font-size:11px}
+ #mainNavigation{display:none}
+ main{padding:17px 12px 28px}
+ .app-page{min-height:calc(100dvh - 150px)}
+ .app-page-title{font-size:21px;margin:6px 0 16px}
+ #mobileTabBar{left:9px;right:9px;bottom:calc(7px + env(safe-area-inset-bottom));min-height:61px;padding:5px 4px;border-radius:17px}
+ #mobileTabBar a{min-height:48px;gap:2px;font-size:10px}
+ #mobileTabBar a span{width:25px;height:24px;font-size:16px}
+ #mobileTabBar a small{font-size:9px}
+ #chatWorkspace>.section-heading{display:block;margin-bottom:11px}
+ #chatWorkspace>.section-heading p{margin-top:5px;font-size:10px}
+ .chat-shell{grid-template-columns:1fr;min-height:calc(100dvh - 190px);border-radius:18px}
+ .chat-sidebar{display:flex;flex-direction:row;align-items:center;gap:8px;padding:9px 10px;border-inline-end:0;border-bottom:1px solid var(--app-border);overflow-x:auto}
+ .chat-brand{padding:0;border:0;gap:7px;flex:none}
+ .chat-orb{width:31px;height:31px;font-size:16px}
+ .chat-brand strong{font-size:11px}.chat-brand small{font-size:9px}
+ .chat-new{width:auto;min-width:max-content;min-height:34px;padding:6px 9px;font-size:10px}
+ .chat-side-label,.chat-side-foot{display:none}
+ #chatBrain{width:auto;min-width:115px;max-width:145px;min-height:34px;font-size:10px;padding:6px 8px}
+ .chat-top{padding:11px 13px}
+ .chat-top strong{font-size:12px}.chat-top small{font-size:9px}
+ .chat-welcome{padding:22px 13px}
+ .chat-big-orb{width:55px;height:55px;font-size:25px;margin-bottom:10px}
+ .chat-welcome h3{font-size:21px}
+ .chat-welcome>p{font-size:11px}
+ .chat-prompts{grid-template-columns:1fr;gap:6px;margin-top:15px}
+ .chat-prompts>div{display:grid;grid-template-columns:22px 1fr;align-items:center;padding:9px 10px;font-size:13px}
+ .chat-prompts strong{font-size:10px;margin:0}.chat-prompts small{grid-column:2;font-size:9px;margin-top:1px}
+ .chat-messages{max-height:32vh;padding:0 11px}
+ .chat-message{max-width:94%;font-size:12px;padding:9px 11px}
+ .chat-consent{margin:0 9px 7px;padding:8px 9px}
+ .chat-consent label{font-size:9px}
+ .chat-composer{margin:0 9px;padding:6px;gap:6px}
+ .chat-composer textarea{font-size:12px}
+ .chat-disclaimer{font-size:8px}
+ #services{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ #services .card{min-height:145px;padding:13px 12px;border-radius:15px}
+ #services .ico{width:39px;height:39px;border-radius:12px;font-size:20px}
+ #services .card h3{font-size:12px;margin:9px 0 3px}
+ #services .card p{font-size:10px;line-height:1.65}
+ #services .service-tag{font-size:8px;padding-top:7px}
+ .room-grid{grid-template-columns:1fr;gap:9px}
+ .room-card{padding:13px;gap:11px;border-radius:14px}
+ .room-icon{width:37px;height:37px;font-size:18px}
+ .room-copy h3{font-size:13px}.room-copy p{font-size:10px}
+ #page-languages .language-demo{grid-template-columns:1fr}
+ #page-account #signedInView{grid-template-columns:1fr;gap:10px}
+ #page-account #signedInView>h3,#page-account #signedInView>p,#page-account #ownerControlCenter{grid-column:1}
+ #page-account #ownerControlCenter .grid,#page-owner #ownerControlCenter .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #page-owner #specialistBrainsList{grid-template-columns:1fr}
+ #page-account #authPanel{padding:13px}
+}
+@media(max-width:360px){
+ #services .card{min-height:138px;padding:11px 10px}
+ #services .card h3{font-size:11px}
+ #mobileTabBar a small{font-size:8px}
+ .chat-brand small{display:none}
+}
+@media(prefers-reduced-motion:reduce){.app-page{animation:none}}
+\n</style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
 <nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#page-home"><span aria-hidden="true">⌂</span>الرئيسية</a><a href="#page-services"><span aria-hidden="true">▦</span>الخدمات</a><a href="#page-languages"><span aria-hidden="true">🌍</span>اللغات</a><a href="#page-account"><span aria-hidden="true">👤</span>حسابي</a><a href="#page-owner" id="desktopOwnerLink" hidden><span aria-hidden="true">✦</span>مركز المالكة</a></nav>
