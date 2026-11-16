@@ -1,0 +1,43 @@
+name: Validate ATHR preview
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate-static-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate HTML, required controls, and no video capture
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+          source = Path("index.html").read_text(encoding="utf-8")
+          required = ["chatWorkspace", "attachImageBtn", "speechInputBtn", "voiceReplyBtn", "recordNoteBtn", "tutorLanguage", "tutorLevel", "tutorMode"]
+          missing = [item for item in required if f'id="{item}"' not in source]
+          if missing:
+              raise SystemExit("Missing required UI controls: " + ", ".join(missing))
+          forbidden = [r"<video\\b", r"capture\\s*=\\s*['\\\"]user", r"accept=['\\\"][^'\\\"]*video/"]
+          found = [pattern for pattern in forbidden if re.search(pattern, source, re.I)]
+          if found:
+              raise SystemExit("Camera/video UI is not allowed in ATHR.")
+          scripts = re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>", source, re.I)
+          if not scripts:
+              raise SystemExit("No inline application scripts found.")
+          Path("/tmp/athr-inline-scripts").mkdir(exist_ok=True)
+          for index, script in enumerate(scripts):
+              Path(f"/tmp/athr-inline-scripts/{index}.mjs").write_text(script, encoding="utf-8")
+          print(f"Found {len(scripts)} inline script blocks; required controls and media restrictions passed.")
+          PY
+      - name: Check JavaScript syntax
+        run: |
+          for file in /tmp/athr-inline-scripts/*.mjs; do
+            node --check "$file"
+          done
