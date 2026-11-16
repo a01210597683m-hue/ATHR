@@ -144,6 +144,7 @@ Deno.serve(async (req: Request) => {
   if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation?.id || null }, 502);
 
   // Persist only after inference returned a valid answer.
+  const isNewConversation = !conversation;
   if (!conversation) {
     const { data, error } = await db.from("conversations").insert({
       user_id: userId, assistant_type: brainKey, interface_locale: "ar",
@@ -152,15 +153,17 @@ Deno.serve(async (req: Request) => {
     if (error || !data) return json({ error: "conversation_create_failed" }, 500);
     conversation = data;
   }
-  const { error: userSaveError } = await db.from("messages").insert({
-    conversation_id: conversation.id, user_id: userId, role: "user", content: message,
-  });
-  if (userSaveError) return json({ error: "message_save_failed" }, 500);
-
-  const { error: assistantSaveError } = await db.from("messages").insert({
-    conversation_id: conversation.id, user_id: userId, role: "assistant", content: answer,
-  });
-  if (assistantSaveError) return json({ error: "assistant_save_failed", conversation_id: conversation.id }, 500);
+  // Insert both sides in one database statement so a partial exchange is not saved.
+  const { error: exchangeSaveError } = await db.from("messages").insert([
+    { conversation_id: conversation.id, user_id: userId, role: "user", content: message },
+    { conversation_id: conversation.id, user_id: userId, role: "assistant", content: answer },
+  ]);
+  if (exchangeSaveError) {
+    if (isNewConversation) {
+      await db.from("conversations").delete().eq("id", conversation.id).eq("user_id", userId);
+    }
+    return json({ error: "exchange_save_failed", conversation_id: isNewConversation ? null : conversation.id }, 500);
+  }
   await db.from("conversations").update({ updated_at: new Date().toISOString() })
     .eq("id", conversation.id).eq("user_id", userId);
 
