@@ -603,6 +603,13 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
  #chatWorkspace .chat-prompts{display:none}
 }
 
+/* Private voice-note playback and send controls */
+.voice-note-message{padding:8px 10px!important;max-width:min(82%,340px)!important}
+.voice-note-message audio{display:block;width:min(260px,65vw);height:38px}
+.send-voice-note{display:block;margin-top:8px;min-height:38px;padding:8px 14px;border-radius:12px;background:linear-gradient(120deg,#8e79e9,#5cacec);color:#fff;font-weight:700}
+.send-voice-note:disabled{opacity:.55}
+#chatAttachmentPreview audio{max-width:100%;width:min(320px,80vw)}
+
 /* ATHR plans and wallet — additive account module */
 #billingPanel{grid-column:1/-1;margin-top:18px;padding:20px;border:1px solid rgba(240,207,145,.24);border-radius:20px;background:linear-gradient(145deg,rgba(27,34,75,.88),rgba(12,18,43,.94))}
 #billingPanel .billing-intro{color:var(--muted);font-size:12px;line-height:1.8;margin:5px 0 16px}
@@ -922,6 +929,7 @@ $("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوح�
 $("refreshSpecialistBrains").onclick=loadSpecialistBrains;
 let activeConversationId=null;
 let athrVoiceReplies=false, athrRecognition=null, athrRecorder=null, athrPreviewObjectUrl=null;
+let athrPendingVoiceNote=null,athrRecordStartedAt=0,athrRecordStopTimer=null;
 let chatHistoryLoading=false;
 function chatBrainLabel(key){
  const labels={central:"العقل المركزي",learning:"التعلّم",languages:"اللغات",creative:"الإبداع",wellbeing:"الرفاه",projects:"المشروعات",research:"البحث والتحليل"};
@@ -953,17 +961,23 @@ async function openChatConversation(conversationId){
  const {data:{session}}=await supabase.auth.getSession();
  if(!session){chatStatus("سجّلي الدخول أولًا لفتح المحادثات المحفوظة.",true);return;}
  chatStatus("جارٍ فتح المحادثة…");
- const [conversationResult,messagesResult]=await Promise.all([
+ const [conversationResult,messagesResult,attachmentsResult]=await Promise.all([
   supabase.from("conversations").select("id,title,assistant_type").eq("id",conversationId).eq("user_id",session.user.id).maybeSingle(),
-  supabase.from("messages").select("role,content,created_at").eq("conversation_id",conversationId).eq("user_id",session.user.id).in("role",["user","assistant"]).order("created_at",{ascending:true}).limit(100)
+  supabase.from("messages").select("id,role,content,created_at").eq("conversation_id",conversationId).eq("user_id",session.user.id).in("role",["user","assistant"]).order("created_at",{ascending:true}).limit(100),
+  supabase.from("message_attachments").select("message_id,object_path,mime_type").eq("conversation_id",conversationId).eq("user_id",session.user.id)
  ]);
- if(conversationResult.error||messagesResult.error||!conversationResult.data){
+ if(conversationResult.error||messagesResult.error||attachmentsResult.error||!conversationResult.data){
   chatStatus("تعذر فتح هذه المحادثة. تحققي من اتصالك ثم حاولي مرة أخرى.",true);return;
  }
  activeConversationId=conversationResult.data.id;
  $("chatBrain").value=conversationResult.data.assistant_type||"central";
  $("chatMessages").textContent="";
- for(const item of (messagesResult.data||[]))addChatMessage(item.role,item.content);
+ const voiceByMessage=new Map((attachmentsResult.data||[]).map(item=>[item.message_id,item]));
+ for(const item of (messagesResult.data||[])){
+  addChatMessage(item.role,item.content);
+  const attachment=voiceByMessage.get(item.id);
+  if(attachment)await renderVoiceAttachment(item.id,attachment.object_path);
+ }
  $("chatWelcome").hidden=(messagesResult.data||[]).length>0;
  $("chatHistoryPanel").hidden=true;
  $("toggleChatHistoryBtn").setAttribute("aria-expanded","false");
@@ -1008,8 +1022,85 @@ $("chatImageInput").onchange=()=>{const file=$("chatImageInput").files?.[0];if(!
 $("recordNoteBtn").onclick=async()=>{
  if(athrRecorder?.state==="recording"){athrRecorder.stop();$("recordNoteBtn").textContent="⏺ تسجيل صوتي";return;}
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){chatStatus("تسجيل الصوت غير مدعوم على هذا المتصفح أو الجهاز.",true);return;}
- try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});clearAthrAttachmentPreview();const chunks=[];const recorder=new MediaRecorder(stream);athrRecorder=recorder;recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onerror=()=>{stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;$("recordNoteBtn").textContent="⏺ تسجيل صوتي";chatStatus("تعذر إكمال تسجيل الصوت.",true);};recorder.onstop=()=>{const blob=new Blob(chunks,{type:recorder.mimeType||"audio/webm"});const host=$("chatAttachmentPreview");host.hidden=false;const audio=document.createElement("audio");audio.controls=true;athrPreviewObjectUrl=URL.createObjectURL(blob);audio.src=athrPreviewObjectUrl;host.append(audio);const note=document.createElement("small");note.textContent="تسجيل صوتي محفوظ مؤقتًا في هذه الصفحة للمعاينة فقط؛ لم يُرسل إلى محادثة أخرى.";host.append(note);stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;$("recordNoteBtn").textContent="⏺ تسجيل صوتي";};recorder.start();$("recordNoteBtn").textContent="⏹ إيقاف التسجيل";chatStatus("جارٍ تسجيل الصوت…");}catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  clearAthrAttachmentPreview();athrPendingVoiceNote=null;
+  const preferred=["audio/webm;codecs=opus","audio/mp4","audio/webm"];
+  const mimeType=preferred.find(type=>MediaRecorder.isTypeSupported?.(type))||"";
+  const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined);
+  const chunks=[];athrRecorder=recorder;athrRecordStartedAt=Date.now();
+  recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  recorder.onerror=()=>{
+   if(athrRecordStopTimer)clearTimeout(athrRecordStopTimer);athrRecordStopTimer=null;
+   stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;
+   $("recordNoteBtn").textContent="⏺ تسجيل صوتي";chatStatus("تعذر إكمال تسجيل الصوت.",true);
+  };
+  recorder.onstop=()=>{
+   if(athrRecordStopTimer)clearTimeout(athrRecordStopTimer);athrRecordStopTimer=null;
+   const duration=Math.max(1,Math.round((Date.now()-athrRecordStartedAt)/1000));
+   const blob=new Blob(chunks,{type:recorder.mimeType||"audio/webm"});
+   stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;
+   $("recordNoteBtn").textContent="⏺ تسجيل صوتي";
+   if(!blob.size){chatStatus("التسجيل فارغ. حاولي مرة أخرى.",true);return;}
+   if(blob.size>10*1024*1024){chatStatus("التسجيل أكبر من 10 ميجابايت؛ اختصري المقطع وأعيدي التسجيل.",true);return;}
+   if(duration>180){chatStatus("الحد الأقصى للرسالة الصوتية 3 دقائق.",true);return;}
+   athrPendingVoiceNote={blob,duration,mimeType:blob.type||"audio/webm"};
+   const host=$("chatAttachmentPreview");host.hidden=false;
+   const audio=document.createElement("audio");audio.controls=true;audio.preload="metadata";
+   athrPreviewObjectUrl=URL.createObjectURL(blob);audio.src=athrPreviewObjectUrl;host.append(audio);
+   const note=document.createElement("small");note.textContent="معاينة الرسالة الصوتية · "+duration+" ثانية · "+(blob.size/1024/1024).toFixed(2)+" ميجابايت";host.append(note);
+   const send=document.createElement("button");send.type="button";send.id="sendVoiceNoteBtn";send.className="send-voice-note";send.textContent="إرسال الرسالة الصوتية";send.onclick=sendVoiceNote;host.append(send);
+   chatStatus("التسجيل جاهز. راجعيه ثم اضغطي إرسال الرسالة الصوتية.");
+  };
+  recorder.start(1000);
+  $("recordNoteBtn").textContent="⏹ إيقاف التسجيل";
+  chatStatus("جارٍ تسجيل الصوت… الحد الأقصى 3 دقائق.");
+  athrRecordStopTimer=setTimeout(()=>{if(athrRecorder===recorder&&recorder.state==="recording"){recorder.stop();chatStatus("وصل التسجيل للحد الأقصى وتم إيقافه.");}},180000);
+ }catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
 };
+async function renderVoiceAttachment(messageId,objectPath){
+ const {data,error}=await supabase.storage.from("athr-assets").createSignedUrl(objectPath,3600);
+ if(error||!data?.signedUrl){chatStatus("تعذر تحميل الرسالة الصوتية للتشغيل.",true);return;}
+ const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message user voice-note-message";el.dataset.messageId=messageId;
+ const audio=document.createElement("audio");audio.controls=true;audio.preload="none";audio.src=data.signedUrl;audio.setAttribute("aria-label","تشغيل الرسالة الصوتية");
+ el.append(audio);host.append(el);host.scrollTop=host.scrollHeight;
+}
+async function sendVoiceNote(){
+ const pending=athrPendingVoiceNote;if(!pending)return;
+ const button=$("sendVoiceNoteBtn");if(button)button.disabled=true;
+ const {data:{session}}=await supabase.auth.getSession();
+ if(!session){if(button)button.disabled=false;chatStatus("سجّلي الدخول أولًا لإرسال الرسالة الصوتية.",true);return;}
+ let conversationId=activeConversationId,createdConversation=false,messageId=crypto.randomUUID(),objectPath="";
+ try{
+  if(conversationId){
+   const {data,error}=await supabase.from("conversations").select("id,assistant_type").eq("id",conversationId).eq("user_id",session.user.id).maybeSingle();
+   if(error||!data)throw new Error("تعذر التحقق من المحادثة الحالية.");
+   if(data.assistant_type!==$("chatBrain").value)throw new Error("اختاري العقل المرتبط بالمحادثة أو ابدئي محادثة جديدة.");
+  }else{
+   const {data,error}=await supabase.from("conversations").insert({user_id:session.user.id,assistant_type:$("chatBrain").value,interface_locale:"ar",title:"رسالة صوتية"}).select("id").single();
+   if(error||!data)throw new Error("تعذر إنشاء محادثة للرسالة الصوتية.");
+   conversationId=data.id;createdConversation=true;
+  }
+  const ext=({"audio/webm":"webm","audio/mp4":"m4a","audio/ogg":"ogg","audio/mpeg":"mp3","audio/aac":"aac","audio/wav":"wav"})[pending.mimeType.split(";")[0]]||"webm";
+  objectPath=session.user.id+"/"+conversationId+"/"+messageId+"."+ext;
+  const {error:uploadError}=await supabase.storage.from("athr-assets").upload(objectPath,pending.blob,{contentType:pending.mimeType,upsert:false});
+  if(uploadError)throw new Error("تعذر رفع الملف الصوتي بأمان. "+uploadError.message);
+  const {error:messageError}=await supabase.from("messages").insert({id:messageId,conversation_id:conversationId,user_id:session.user.id,role:"user",content:"رسالة صوتية"});
+  if(messageError)throw new Error("تم رفع الملف لكن تعذر ربطه بالمحادثة.");
+  const {error:attachmentError}=await supabase.from("message_attachments").insert({message_id:messageId,conversation_id:conversationId,user_id:session.user.id,bucket_id:"athr-assets",object_path:objectPath,mime_type:pending.mimeType,size_bytes:pending.blob.size,duration_seconds:pending.duration});
+  if(attachmentError){await supabase.from("messages").delete().eq("id",messageId).eq("user_id",session.user.id);throw new Error("تعذر حفظ بيانات مرفق الصوت.");}
+  await supabase.from("conversations").update({updated_at:new Date().toISOString()}).eq("id",conversationId).eq("user_id",session.user.id);
+  activeConversationId=conversationId;$("chatWelcome").hidden=true;addChatMessage("user","رسالة صوتية");
+  await renderVoiceAttachment(messageId,objectPath);
+  athrPendingVoiceNote=null;clearAthrAttachmentPreview();chatStatus("تم إرسال الرسالة الصوتية وحفظها في محادثتك الخاصة. تحويلها إلى نص والرد عليها صوتيًا سيأتي بعد ربط خدمة الصوت الذكي.");
+  await loadChatHistory();
+ }catch(error){
+  if(objectPath)await supabase.storage.from("athr-assets").remove([objectPath]);
+  if(createdConversation&&conversationId)await supabase.from("conversations").delete().eq("id",conversationId).eq("user_id",session.user.id);
+  if(button)button.disabled=false;
+  chatStatus(error?.message||"تعذر إرسال الرسالة الصوتية. حاولي مرة أخرى.",true);
+ }
+}
 function addChatMessage(role,content){const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message "+role;el.textContent=content;host.append(el);host.scrollTop=host.scrollHeight;}
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
 async function sendChat(){
