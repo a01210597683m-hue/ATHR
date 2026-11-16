@@ -1022,8 +1022,9 @@ $("chatImageInput").onchange=()=>{const file=$("chatImageInput").files?.[0];if(!
 $("recordNoteBtn").onclick=async()=>{
  if(athrRecorder?.state==="recording"){athrRecorder.stop();$("recordNoteBtn").textContent="⏺ تسجيل صوتي";return;}
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){chatStatus("تسجيل الصوت غير مدعوم على هذا المتصفح أو الجهاز.",true);return;}
+ let stream=null;
  try{
-  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
   clearAthrAttachmentPreview();athrPendingVoiceNote=null;
   const preferred=["audio/webm;codecs=opus","audio/mp4","audio/webm"];
   const mimeType=preferred.find(type=>MediaRecorder.isTypeSupported?.(type))||"";
@@ -1056,7 +1057,7 @@ $("recordNoteBtn").onclick=async()=>{
   $("recordNoteBtn").textContent="⏹ إيقاف التسجيل";
   chatStatus("جارٍ تسجيل الصوت… الحد الأقصى 3 دقائق.");
   athrRecordStopTimer=setTimeout(()=>{if(athrRecorder===recorder&&recorder.state==="recording"){recorder.stop();chatStatus("وصل التسجيل للحد الأقصى وتم إيقافه.");}},180000);
- }catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
+ }catch(e){stream?.getTracks().forEach(t=>t.stop());chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
 };
 async function renderVoiceAttachment(messageId,objectPath){
  const {data,error}=await supabase.storage.from("athr-assets").createSignedUrl(objectPath,3600);
