@@ -71,6 +71,22 @@ jobs:
               raise SystemExit("Request validation checks failed: " + ", ".join(failed))
           print("Request payload validation checks passed.")
           PY
+      - name: Check atomic chat persistence
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          api = Path("supabase/functions/athr-chat/index.ts").read_text(encoding="utf-8")
+          checks = {
+              "single batched message insert": 'db.from("messages").insert([' in api,
+              "both user and assistant entries in same batch": 'role: "user", content: message' in api and 'role: "assistant", content: answer' in api,
+              "new conversation cleanup on persistence failure": 'if (isNewConversation)' in api and 'db.from("conversations").delete()' in api,
+              "partial message writes removed": 'userSaveError' not in api and 'assistantSaveError' not in api,
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit("Atomic persistence checks failed: " + ", ".join(failed))
+          print("Atomic chat persistence checks passed.")
+          PY
       - name: Check JavaScript syntax
         run: |
           for file in /tmp/athr-inline-scripts/*.mjs; do
