@@ -591,8 +591,7 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
     <div class="chat-prompts"><div>✧ <strong>ساعدني أفكر</strong><small>رتّب فكرة تشغل بالك</small></div><div>◈ <strong>علّمني شيئًا جديدًا</strong><small>ابدأ رحلة تعلّم</small></div><div>⌘ <strong>خطّط لمشروعي</strong><small>حوّل الهدف إلى خطوات</small></div></div>
    </div>
    <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
-   <p id="chatStatus" class="chat-status" role="status">المحرك المستقل لم يتم ربطه بعد؛ لن يتم إرسال أي رسالة قبل تجهيزه.</p>
-   <div class="chat-consent"><label><input id="chatProviderConsent" type="checkbox"><span>أوافق على معالجة رسالتي والسياق اللازم للإجابة بواسطة محرك ATHR المستقل بعد تفعيله. سيتم توضيح جهة الاستضافة ومكان المعالجة ومدة الاحتفاظ قبل بدء الخدمة.</span></label></div>
+   <p id="chatStatus" class="chat-status" role="status">المحرك المستقل قيد التجهيز؛ ستظهر هنا حالة الإرسال بوضوح.</p>
    <div class="chat-composer"><textarea id="chatInput" rows="2" placeholder="اكتبي رسالتك هنا…" aria-label="رسالتك"></textarea><button type="button" id="sendChatBtn" aria-label="إرسال الرسالة">↑</button></div>
    <p class="chat-disclaimer">لا ترسلي كلمات مرور أو بيانات دفع أو معلومات شديدة الحساسية.</p>
   </div>
@@ -610,7 +609,7 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
     <h3>ابدأ حساب ATHR</h3>
     <p>إنشاء الحساب أو تسجيل الدخول. ستظهر سياسة الخصوصية وخيارات الموافقة بوضوح قبل التسجيل.</p>
     <div class="tools"><input id="authEmail" type="email" autocomplete="email" placeholder="البريد الإلكتروني" aria-label="البريد الإلكتروني"><input id="authPassword" type="password" autocomplete="new-password" placeholder="كلمة المرور" aria-label="كلمة المرور"></div>
-    <label style="display:flex;gap:10px;align-items:flex-start;margin-top:16px;color:var(--muted);font-size:13px;line-height:1.7"><input id="acceptPrivacy" type="checkbox" style="width:20px;height:20px;flex:none"><span>قرأت <a href="https://github.com/a01210597683m-hue/ATHR/blob/main/docs/PRIVACY_NOTICE_AR.md" target="_blank" rel="noopener">إشعار الخصوصية</a> و<a href="https://github.com/a01210597683m-hue/ATHR/blob/main/docs/TERMS_OF_SERVICE_AR.md" target="_blank" rel="noopener">شروط الخدمة</a>. أفهم أن ATHR يعالج البيانات اللازمة لتشغيل الخدمة، وقد يستخدم مراجعة آلية أو وصولًا بشريًا محدودًا ومصرحًا به عند الضرورة للسلامة والأمن والدعم والالتزامات القانونية، وفق الضوابط والسياسات. وأوافق على ذلك.</span></label>
+         <p class="note" style="margin-top:16px">تنبيه الخصوصية: يعالج ATHR بيانات الحساب والرسائل التي ترسلينها بالقدر اللازم لتقديم الخدمة وحمايتها، وفق <a href="https://github.com/a01210597683m-hue/ATHR/blob/main/docs/PRIVACY_NOTICE_AR.md" target="_blank" rel="noopener">إشعار الخصوصية</a> و<a href="https://github.com/a01210597683m-hue/ATHR/blob/main/docs/TERMS_OF_SERVICE_AR.md" target="_blank" rel="noopener">شروط الاستخدام</a>. هذه إفادة للاطلاع وليست موافقة إضافية أو خطوة مطلوبة للدخول. لن تُستخدم المحادثات لتحسين النماذج إلا إذا اخترتِ ذلك بشكل منفصل واختياري.</p>
     <label style="display:flex;gap:10px;align-items:flex-start;margin-top:12px;color:var(--muted);font-size:13px;line-height:1.7"><input id="optModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>أوافق اختياريًا على استخدام محادثاتي المؤهلة لتحسين جودة نماذج ATHR، وقد تخضع عيّنات محدودة لمراجعة بشرية بواسطة أشخاص مخولين وتحت التزامات سرية. هذا الاختيار غير مطلوب لإنشاء الحساب ويمكن تغييره لاحقًا من إعدادات الخصوصية.</span></label>
     <div class="tools"><button class="primary" id="signUpBtn">إنشاء حساب</button><button id="signInBtn">تسجيل الدخول</button></div>
     <p class="note">ملاحظة النسخة التجريبية: يتم حفظ اختيارك في الحساب، لكن خط تحسين النماذج والمراجعة البشرية التشغيلية لم يُفعّلا بعد. لن يُستخدم محتوى المحادثات لهذا الغرض قبل تفعيل النظام ونشر تفاصيله وضوابطه.</p>
@@ -776,14 +775,17 @@ function addChatMessage(role,content){const host=$("chatMessages"),el=document.c
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
 async function sendChat(){
  const message=$("chatInput").value.trim();if(!message)return;
- if(!$("chatProviderConsent").checked){chatStatus("يلزم تأكيد موافقتك على معالجة الرسالة عبر محرك ATHR المستقل بعد تفعيله.",true);return;}
  const {data:{session}}=await supabase.auth.getSession();if(!session){chatStatus("سجّلي الدخول أولًا قبل إرسال الرسائل.",true);return;}
  const button=$("sendChatBtn");button.disabled=true;$("chatInput").disabled=true;chatStatus("جارٍ التحقق من جاهزية محرك ATHR…");
  const {data,error}=await supabase.functions.invoke("athr-chat",{body:{message,brain_key:$("chatBrain").value,conversation_id:activeConversationId}});
  if(error||!data?.success){
-  const code=data?.error||error?.message||"unknown_error";
-  const messages={engine_not_configured:"خادم الذكاء الاصطناعي المستقل لم يتم إعداده بعد. لم تُرسل رسالتك إلى أي مزود ذكاء اصطناعي.",brain_not_enabled:"هذا العقل غير مفعّل بعد. ستتمكن المالكة من تفعيله بعد تجهيز المحرك.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",inference_unreachable:"تعذر الاتصال بخادم ATHR المستقل. حاولي لاحقًا.",inference_auth_failed:"تعذر التحقق من صلاحية الاتصال بخادم ATHR.",inference_rate_limited:"خادم ATHR وصل إلى حد الاستخدام المؤقت.",conversation_brain_mismatch:"هذه المحادثة مرتبطة بعقل آخر. ابدئي محادثة جديدة لهذا العقل."};
-  chatStatus(messages[code]||("لم تكتمل الرسالة: "+code),true);button.disabled=false;$("chatInput").disabled=false;return;
+  let code=data?.error;
+  if(!code&&error?.context&&typeof error.context.json==="function"){
+   try{const detail=await error.context.clone().json();code=detail?.error;}catch{}
+  }
+  code=code||"unknown_error";
+  const messages={engine_not_configured:"محرك ATHR المستقل لم يكتمل تجهيزه بعد. لم تُرسل رسالتك ولم تُحفظ؛ جرّبي مرة أخرى بعد تفعيل المحرك.",brain_not_enabled:"هذا العقل غير مفعّل بعد. ستتمكن المالكة من تفعيله بعد تجهيز المحرك.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",inference_unreachable:"تعذر الاتصال بخادم ATHR المستقل. رسالتك لم تكتمل؛ حاولي لاحقًا.",inference_auth_failed:"تعذر التحقق من صلاحية الاتصال بخادم ATHR.",inference_rate_limited:"خادم ATHR وصل إلى حد الاستخدام المؤقت.",inference_provider_error:"خادم ATHR واجه خطأ أثناء توليد الرد. لم يكتمل إرسال الإجابة.",inference_invalid_response:"وصل رد غير مفهوم من خادم ATHR.",conversation_brain_mismatch:"هذه المحادثة مرتبطة بعقل آخر. ابدئي محادثة جديدة لهذا العقل."};
+  chatStatus(messages[code]||"تعذر إكمال الرسالة بسبب مشكلة اتصال بالخدمة. حاولي لاحقًا.",true);button.disabled=false;$("chatInput").disabled=false;return;
  }
  activeConversationId=data.conversation_id;addChatMessage("user",message);addChatMessage("assistant",data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
 }
@@ -794,7 +796,6 @@ $("chatBrain").onchange=()=>{activeConversationId=null;$("chatMessages").textCon
 $("signUpBtn").onclick=async()=>{
  const email=$("authEmail").value.trim(),password=$("authPassword").value;
  if(!email||password.length<8){status("أدخلي بريدًا صحيحًا وكلمة مرور من 8 أحرف على الأقل.",true);return;}
- if(!$("acceptPrivacy").checked){status("يلزم تأكيد قراءة إشعار الخصوصية وشروط الخدمة.",true);return;}
  status("جارٍ إنشاء الحساب…");const opt=$("optModel").checked;
  const {data,error}=await supabase.auth.signUp({email,password,options:{data:{
   interface_language:"ar",
