@@ -1044,7 +1044,7 @@ $("recordNoteBtn").onclick=async()=>{
    if(!blob.size){chatStatus("التسجيل فارغ. حاولي مرة أخرى.",true);return;}
    if(blob.size>10*1024*1024){chatStatus("التسجيل أكبر من 10 ميجابايت؛ اختصري المقطع وأعيدي التسجيل.",true);return;}
    if(duration>180){chatStatus("الحد الأقصى للرسالة الصوتية 3 دقائق.",true);return;}
-   athrPendingVoiceNote={blob,duration,mimeType:blob.type||"audio/webm"};
+   athrPendingVoiceNote={blob,duration,mimeType:(blob.type||"audio/webm").split(";")[0]};
    const host=$("chatAttachmentPreview");host.hidden=false;
    const audio=document.createElement("audio");audio.controls=true;audio.preload="metadata";
    athrPreviewObjectUrl=URL.createObjectURL(blob);audio.src=athrPreviewObjectUrl;host.append(audio);
