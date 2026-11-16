@@ -31,12 +31,12 @@ ATHR is an Arabic-first, multilingual AI ecosystem designed to help people think
 - Users can submit quality reports; transcript excerpts are shared only when explicitly entered and selected.
 - Wellbeing review requests are a separate user-initiated flow requiring a separate explicit consent for the specific excerpt.
 - Private operational schema includes quality metrics, human-review access logs, staff-role assignments, and admin-action audit records.
-- Security Advisor currently reports no findings.
+- Supabase Security Advisor has an outstanding password-security recommendation: leaked-password protection is disabled. This has been deferred; it must be reviewed before public production launch.
 
 ## Not yet production-ready
-- The owner account has not yet been assigned a protected owner role.
+- The verified owner account currently has an active protected `owner` role.
 - A first owner-only dashboard shell is connected to the deployed `athr-owner-overview` Edge Function; it shows aggregate account and review counts only.
-- The owner role is not yet assigned, so the dashboard remains hidden until the verified owner account is provisioned server-side.
+- The owner-only dashboard endpoints and specialist-brain controls have been exercised successfully; this does not mean the model runtime is connected.
 - The reviewer console and operational review workflow are not implemented.
 - No human-review team workflow or model-training/improvement pipeline is active.
 - Supabase Auth email confirmation, password recovery, allowed redirect URLs, and production email templates still need configuration and end-to-end testing.
