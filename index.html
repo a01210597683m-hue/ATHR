@@ -383,22 +383,36 @@ a:hover{color:#e2d9ff}
 #chatBrain{width:100%;margin-top:8px}
 .chat-composer textarea{min-height:46px;max-height:150px}
 @media(max-width:700px){.chat-messages{padding:10px 13px}.chat-status,.chat-consent{margin-inline:13px}.chat-consent{margin-top:8px}.chat-message{max-width:92%}}
+
+/* Dedicated ATHR pages and mobile-first navigation */
+.app-page{display:block;min-height:62vh;max-width:1080px;margin:0 auto;padding:18px 0 28px}
+.app-page[hidden]{display:none!important}
+.app-page-title{margin:8px 0 22px;color:var(--gold);font-size:clamp(23px,4vw,32px);font-weight:850}
+#mainNavigation a.active,#mobileTabBar a.active{background:rgba(137,113,230,.24);border-color:rgba(190,174,255,.5);color:#fff}
+#desktopOwnerLink[hidden],#mobileOwnerLink[hidden]{display:none!important}
+#page-home{padding-top:8px}
+#page-home #chatWorkspace{margin:0;scroll-margin-top:20px}
+#page-services #services{margin-bottom:34px}
+#page-services #serviceDetails{margin-top:26px}
+#page-owner #ownerControlCenter{margin-top:0!important}
+#page-brains .room-card,#page-learning .room-card,#page-projects .room-card,#page-creative .room-card,#page-care .room-card,#page-worlds .room-card{margin-top:12px}
+@media(max-width:700px){.app-page{min-height:65vh;padding:12px 0 24px}.app-page-title{margin:8px 0 18px}}
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
-<nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#services"><span aria-hidden="true">▦</span>الخدمات</a><a href="#chatWorkspace"><span aria-hidden="true">✧</span>المساعد</a><a href="#languageCenter"><span aria-hidden="true">🌍</span>اللغات</a><a href="#authPanel"><span aria-hidden="true">👤</span>حسابي</a></nav>
+<nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#page-home"><span aria-hidden="true">⌂</span>الرئيسية</a><a href="#page-services"><span aria-hidden="true">▦</span>الخدمات</a><a href="#page-languages"><span aria-hidden="true">🌍</span>اللغات</a><a href="#page-account"><span aria-hidden="true">👤</span>حسابي</a><a href="#page-owner" id="desktopOwnerLink" hidden><span aria-hidden="true">✦</span>مركز المالكة</a></nav>
 <main>
 <section class="hero"><div class="eyebrow">BEYOND INTELLIGENCE · INTO POSSIBILITY</div><h1 id="welcome">أهلًا بك في ATHR</h1><p id="intro">مساحة ذكية تساعدك على التفكير والتعلّم والإبداع وتحويل أفكارك إلى أثر حقيقي.</p></section>
 <div class="core-wrap"><img class="athr-hero-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك الرسمي" width="340" height="340" fetchpriority="high"></div>
 <div class="section-heading"><h2 class="section-title">مساحات ATHR</h2><p>استكشف المجالات المتاحة في رؤية ATHR. الخدمات التي لم تُفعّل بعد ستُعلن بوضوح عند جاهزيتها.</p></div>
 <section class="grid" id="services" aria-label="مساحات وخدمات ATHR">
-<a class="card service-assistant service-link" href="#chatWorkspace"><div class="ico" aria-hidden="true">🤖</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-brains service-link" href="#roomBrains"><div class="ico" aria-hidden="true">🧠</div><h3>العقول المتخصصة</h3><p>خبرات ذكية متخصصة تعمل معًا حسب احتياجك.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-learning service-link" href="#roomLearning"><div class="ico" aria-hidden="true">🎓</div><h3>التعلّم والتطوير</h3><p>تعلّم مستمر ومسارات تناسب أهدافك.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-projects service-link" href="#roomProjects"><div class="ico" aria-hidden="true">🚀</div><h3>مشروعاتي وأفكاري</h3><p>نظّم أهدافك ومشروعاتك وخطواتك القادمة.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-creative service-link" href="#roomCreative"><div class="ico" aria-hidden="true">🎨</div><h3>استوديو الإبداع</h3><p>حوّل أفكارك إلى محتوى وتصميمات ومبادرات.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-care service-link" href="#roomCare"><div class="ico" aria-hidden="true">🌿</div><h3>العناية بالنفس</h3><p>مساعد داعم مع توضيح حدود المساعدة.</p><span class="service-tag">استكشف المساحة ←</span></a>
-<a class="card service-worlds service-link" href="#roomWorlds"><div class="ico" aria-hidden="true">🌐</div><h3>العوالم التفاعلية</h3><p>مساحات معرفية متغيرة للاستكشاف والتجربة.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-assistant service-link" href="#page-home"><div class="ico" aria-hidden="true">🤖</div><h3>المساعد الذكي</h3><p>مساحة واحدة للفهم والتخطيط والمساعدة اليومية.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-brains service-link" href="#page-brains"><div class="ico" aria-hidden="true">🧠</div><h3>العقول المتخصصة</h3><p>خبرات ذكية متخصصة تعمل معًا حسب احتياجك.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-learning service-link" href="#page-learning"><div class="ico" aria-hidden="true">🎓</div><h3>التعلّم والتطوير</h3><p>تعلّم مستمر ومسارات تناسب أهدافك.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-projects service-link" href="#page-projects"><div class="ico" aria-hidden="true">🚀</div><h3>مشروعاتي وأفكاري</h3><p>نظّم أهدافك ومشروعاتك وخطواتك القادمة.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-creative service-link" href="#page-creative"><div class="ico" aria-hidden="true">🎨</div><h3>استوديو الإبداع</h3><p>حوّل أفكارك إلى محتوى وتصميمات ومبادرات.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-care service-link" href="#page-care"><div class="ico" aria-hidden="true">🌿</div><h3>العناية بالنفس</h3><p>مساعد داعم مع توضيح حدود المساعدة.</p><span class="service-tag">استكشف المساحة ←</span></a>
+<a class="card service-worlds service-link" href="#page-worlds"><div class="ico" aria-hidden="true">🌐</div><h3>العوالم التفاعلية</h3><p>مساحات معرفية متغيرة للاستكشاف والتجربة.</p><span class="service-tag">استكشف المساحة ←</span></a>
 </section>
 
 <section id="serviceDetails" aria-label="تفاصيل مساحات ATHR">
@@ -521,7 +535,7 @@ document.getElementById("speak").onclick=()=>{if(!("speechSynthesis"in window)){
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const supabase = createClient("https://tkwzefzfgpbiljchpxfd.supabase.co","sb_publishable_yZLO6Bo6NdgKJo9jmsHmWA_zl-K7RE7");
-const $=id=>document.getElementById(id), VERSION="2026-11-16-v6";
+const $=id=>document.getElementById(id), VERSION="2026-11-16-v7";
 function status(s,bad=false){$("authStatus").textContent=s;$("authStatus").style.color=bad?"#ffaaa8":"var(--cyan)";}
 async function consent(userId,type,decision,notice={}){const {error}=await supabase.from("privacy_consent_events").insert({user_id:userId,consent_type:type,consent_version:VERSION,decision,notice_snapshot:notice});if(error)throw error;}
 async function refreshOwnerDashboard(){
@@ -671,8 +685,69 @@ $("submitWellbeingReview").onclick=async()=>{
  if(error)return status(error.message,true);
  $("wellbeingReason").value="";$("wellbeingExcerpt").value="";$("wellbeingConsent").checked=false;status("تم إرسال طلبك للمراجعة المنفصلة.");
 };
+
 supabase.auth.onAuthStateChange((_e,s)=>{showSession(s);});
 const {data:{session}}=await supabase.auth.getSession();await showSession(session);
+
+// ATHR multi-page workspace: each destination is an isolated view.
+function initAthrPages(){
+ const main=document.querySelector("main");
+ const page=(id,title)=>{
+  const el=document.createElement("section");el.className="app-page";el.id=id;el.hidden=true;
+  if(title){const h=document.createElement("h2");h.className="app-page-title";h.textContent=title;el.append(h);}
+  main.append(el);return el;
+ };
+ const pages={
+  home:page("page-home",""),
+  services:page("page-services","مساحات ATHR"),
+  languages:page("page-languages","مركز اللغات"),
+  account:page("page-account","حسابي وإعداداتي"),
+  owner:page("page-owner","مركز قيادة ATHR"),
+  brains:page("page-brains","العقول المتخصصة"),
+  learning:page("page-learning","التعلّم والتطوير"),
+  projects:page("page-projects","مشروعاتي وأفكاري"),
+  creative:page("page-creative","استوديو الإبداع"),
+  care:page("page-care","العناية بالنفس"),
+  worlds:page("page-worlds","العوالم التفاعلية")
+ };
+ pages.home.append($("chatWorkspace"));
+ pages.services.append($("services"),$("serviceDetails"));
+ const roomGrid=document.querySelector("#serviceDetails .room-grid");
+ const roomRoutes={roomBrains:"brains",roomLearning:"learning",roomProjects:"projects",roomCreative:"creative",roomCare:"care",roomWorlds:"worlds"};
+ for(const [id,route] of Object.entries(roomRoutes)){const card=$(id);if(card)pages[route].append(card);}
+ if(roomGrid)roomGrid.remove();
+ const langTitle=$("languageCenter"),langDemo=langTitle?.nextElementSibling,langTools=langDemo?.nextElementSibling,langNote=langTools?.nextElementSibling;
+ if(langTitle)pages.languages.append(langTitle);
+ if(langDemo)pages.languages.append(langDemo);
+ if(langTools)pages.languages.append(langTools);
+ if(langNote?.classList.contains("note"))pages.languages.append(langNote);
+ pages.account.append($("authPanel"));
+ pages.owner.append($("ownerControlCenter"));
+ Array.from(main.children).forEach(el=>{if(!el.classList.contains("app-page"))el.hidden=true;});
+ function syncOwnerLinks(){
+  const allowed=!$("ownerControlCenter").hidden;
+  $("desktopOwnerLink").hidden=!allowed;$("mobileOwnerLink").hidden=!allowed;
+  if(!allowed&&location.hash==="#page-owner")location.hash="#page-home";
+ }
+ function route(){
+  let key=(location.hash||"#page-home").slice(1).replace(/^page-/,"");
+  if(!pages[key])key="home";
+  syncOwnerLinks();
+  if(key==="owner"&&$("ownerControlCenter").hidden)key="home";
+  for(const [name,el] of Object.entries(pages))el.hidden=name!==key;
+  document.querySelectorAll("#mainNavigation a,#mobileTabBar a").forEach(a=>{
+   const active=a.getAttribute("href")==="#page-"+key;
+   a.classList.toggle("active",active);
+   if(active)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current");
+  });
+  window.scrollTo({top:0,behavior:"instant"});
+ }
+ window.updateAthrPageAccess=syncOwnerLinks;
+ window.addEventListener("hashchange",route);
+ route();
+}
+initAthrPages();
+
 </script>
 
 <script>
@@ -681,10 +756,10 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 }
 </script>
 <nav id="mobileTabBar" aria-label="التنقل السريع">
- <a href="#welcome" aria-label="الرئيسية"><span aria-hidden="true">⌂</span><small>الرئيسية</small></a>
- <a href="#services" aria-label="الخدمات"><span aria-hidden="true">▦</span><small>الخدمات</small></a>
- <a href="#chatWorkspace" aria-label="المساعد"><span aria-hidden="true">✧</span><small>المساعد</small></a>
- <a href="#languageCenter" aria-label="اللغات"><span aria-hidden="true">🌍</span><small>اللغات</small></a>
- <a href="#authPanel" aria-label="حسابي"><span aria-hidden="true">👤</span><small>حسابي</small></a>
+ <a href="#page-home" aria-label="الرئيسية"><span aria-hidden="true">⌂</span><small>الرئيسية</small></a>
+ <a href="#page-services" aria-label="الخدمات"><span aria-hidden="true">▦</span><small>الخدمات</small></a>
+ <a href="#page-languages" aria-label="اللغات"><span aria-hidden="true">🌍</span><small>اللغات</small></a>
+ <a href="#page-account" aria-label="حسابي"><span aria-hidden="true">👤</span><small>حسابي</small></a>
+ <a href="#page-owner" id="mobileOwnerLink" aria-label="مركز المالكة" hidden><span aria-hidden="true">✦</span><small>المالكة</small></a>
 </nav>
 </body></html>
