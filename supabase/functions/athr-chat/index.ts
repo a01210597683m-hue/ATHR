@@ -117,7 +117,7 @@ Deno.serve(async (req: Request) => {
       signal: AbortSignal.timeout(60000),
     });
   } catch {
-    return json({ error: "inference_unreachable", conversation_id: conversation.id }, 502);
+    return json({ error: "inference_unreachable", conversation_id: conversation?.id || null }, 502);
   }
   if (!aiResponse.ok) {
     if (aiResponse.status === 401 || aiResponse.status === 403) return json({ error: "inference_auth_failed" }, 502);
@@ -133,7 +133,7 @@ Deno.serve(async (req: Request) => {
     : Array.isArray(rawContent)
       ? rawContent.map((part: any) => typeof part?.text === "string" ? part.text : "").join("\n").trim()
       : "";
-  if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation.id }, 502);
+  if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation?.id || null }, 502);
 
   // Persist only after inference returned a valid answer.
   if (!conversation) {
