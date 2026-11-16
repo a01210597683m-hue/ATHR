@@ -12,7 +12,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const prompts: Record<string, string> = {
   central: "أنت المساعد المركزي في ATHR. ساعد المستخدم بالعربية الواضحة أو بلغته، وكن دقيقًا وعمليًا. لا تدّع تنفيذ أفعال لم تنفذها، واذكر حدود معرفتك عند الحاجة.",
   learning: "أنت عقل التعلّم في ATHR. اشرح تدريجيًا، اختبر الفهم بأسئلة قصيرة، وكيّف الشرح مع مستوى المتعلم. لا تختلق مصادر.",
-  languages: "أنت عقل اللغات في ATHR. ساعد في الترجمة والنطق والقواعد والاستعمال الطبيعي، وأظهر المعنى العربي بوضوح عند الحاجة.",
+  languages: "أنت مدرّب لغات ATHR الشخصي. أدر محادثة حقيقية ودافئة باللغة المستهدفة، وكيّف طول الجمل والمفردات مع مستوى المتعلم. لا تحوّل كل رد إلى درس نظري. شجّع المتعلم على الرد، وصحّح الأخطاء المهمة بلطف مع عرض الصياغة الصحيحة وسبب مختصر ومثال طبيعي. إذا أرسل المتعلم جملة صحيحة فلا تخترع خطأ. استخدم العربية لشرح التصحيح عند الحاجة، ثم ارجع للمحادثة باللغة المستهدفة. في تمثيل الأدوار التزم بالشخصية والموقف، واسأل سؤالًا واحدًا في كل مرة. لا تدّع تقييم النطق من النص وحده؛ يمكن تقديم ملاحظات نطق عامة فقط.",
   creative: "أنت عقل الإبداع في ATHR. ساعد في توليد الأفكار وتطويرها إلى مخرجات عملية، مع احترام طلبات المستخدم وحقوق الملكية.",
   wellbeing: "أنت مساعد رفاه عام في ATHR. كن داعمًا وغير حُكمي، وقدّم معلومات عامة وتمارين بسيطة فقط. لا تشخّص ولا تستبدل المختصين، وتعامل مع الخطر العاجل بجدية.",
   projects: "أنت عقل المشروعات في ATHR. حوّل الأهداف إلى نطاق ومراحل ومهام ومخاطر ومؤشرات تقدم قابلة للقياس.",
@@ -41,11 +41,25 @@ Deno.serve(async (req: Request) => {
   if (authError || !authData.user) return json({ error: "invalid_session" }, 401);
   const userId = authData.user.id;
 
+  const contentType = req.headers.get("Content-Type") || "";
+  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) return json({ error: "content_type_invalid" }, 415);
+  const declaredLength = Number(req.headers.get("Content-Length") || 0);
+  if (Number.isFinite(declaredLength) && declaredLength > 65536) return json({ error: "request_too_large" }, 413);
+  let rawBody = "";
+  try { rawBody = await req.text(); } catch { return json({ error: "invalid_body" }, 400); }
+  if (new TextEncoder().encode(rawBody).byteLength > 65536) return json({ error: "request_too_large" }, 413);
   let body: any;
-  try { body = await req.json(); } catch { return json({ error: "invalid_json" }, 400); }
+  try { body = JSON.parse(rawBody); } catch { return json({ error: "invalid_json" }, 400); }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return json({ error: "request_body_invalid" }, 400);
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const brainKey = typeof body.brain_key === "string" ? body.brain_key : "central";
   const conversationId = typeof body.conversation_id === "string" ? body.conversation_id : "";
+  const tutor = body.tutor && typeof body.tutor === "object" ? body.tutor : {};
+  const targetLanguage = typeof tutor.target_language === "string" && ["en","fr","es","de","ja","it"].includes(tutor.target_language) ? tutor.target_language : "en";
+  const tutorLevel = typeof tutor.level === "string" && ["beginner","elementary","intermediate","advanced"].includes(tutor.level) ? tutor.level : "intermediate";
+  const tutorMode = typeof tutor.mode === "string" && ["conversation","roleplay","correction"].includes(tutor.mode) ? tutor.mode : "conversation";
+  const languageNames: Record<string,string> = {en:"English",fr:"French",es:"Spanish",de:"German",ja:"Japanese",it:"Italian"};
+  const tutorInstruction = brainKey === "languages" ? `\n\nSession settings: target language=${languageNames[targetLanguage]}, learner level=${tutorLevel}, practice mode=${tutorMode}. Keep the conversation primarily in ${languageNames[targetLanguage]}. In roleplay mode, begin or continue a realistic scenario. In correction mode, prioritize correcting the learner language errors. Ask only one clear follow-up question at a time.` : "";
   if (!message || message.length > 6000) return json({ error: "message_length_invalid" }, 400);
   if (!Object.hasOwn(prompts, brainKey)) return json({ error: "unknown_brain" }, 400);
 
@@ -103,7 +117,7 @@ Deno.serve(async (req: Request) => {
       headers,
       body: JSON.stringify({
         model: inferenceModel,
-        messages: [{ role: "system", content: prompts[brainKey] }, ...orderedHistory],
+        messages: [{ role: "system", content: prompts[brainKey] + tutorInstruction }, ...orderedHistory],
         temperature: 0.7,
         max_tokens: 900,
         stream: false,
@@ -111,7 +125,7 @@ Deno.serve(async (req: Request) => {
       signal: AbortSignal.timeout(60000),
     });
   } catch {
-    return json({ error: "inference_unreachable", conversation_id: conversation.id }, 502);
+    return json({ error: "inference_unreachable", conversation_id: conversation?.id || null }, 502);
   }
   if (!aiResponse.ok) {
     if (aiResponse.status === 401 || aiResponse.status === 403) return json({ error: "inference_auth_failed" }, 502);
@@ -127,9 +141,10 @@ Deno.serve(async (req: Request) => {
     : Array.isArray(rawContent)
       ? rawContent.map((part: any) => typeof part?.text === "string" ? part.text : "").join("\n").trim()
       : "";
-  if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation.id }, 502);
+  if (!answer) return json({ error: "empty_ai_response", conversation_id: conversation?.id || null }, 502);
 
   // Persist only after inference returned a valid answer.
+  const isNewConversation = !conversation;
   if (!conversation) {
     const { data, error } = await db.from("conversations").insert({
       user_id: userId, assistant_type: brainKey, interface_locale: "ar",
@@ -138,15 +153,17 @@ Deno.serve(async (req: Request) => {
     if (error || !data) return json({ error: "conversation_create_failed" }, 500);
     conversation = data;
   }
-  const { error: userSaveError } = await db.from("messages").insert({
-    conversation_id: conversation.id, user_id: userId, role: "user", content: message,
-  });
-  if (userSaveError) return json({ error: "message_save_failed" }, 500);
-
-  const { error: assistantSaveError } = await db.from("messages").insert({
-    conversation_id: conversation.id, user_id: userId, role: "assistant", content: answer,
-  });
-  if (assistantSaveError) return json({ error: "assistant_save_failed", conversation_id: conversation.id }, 500);
+  // Insert both sides in one database statement so a partial exchange is not saved.
+  const { error: exchangeSaveError } = await db.from("messages").insert([
+    { conversation_id: conversation.id, user_id: userId, role: "user", content: message },
+    { conversation_id: conversation.id, user_id: userId, role: "assistant", content: answer },
+  ]);
+  if (exchangeSaveError) {
+    if (isNewConversation) {
+      await db.from("conversations").delete().eq("id", conversation.id).eq("user_id", userId);
+    }
+    return json({ error: "exchange_save_failed", conversation_id: isNewConversation ? null : conversation.id }, 500);
+  }
   await db.from("conversations").update({ updated_at: new Date().toISOString() })
     .eq("id", conversation.id).eq("user_id", userId);
 
