@@ -810,7 +810,12 @@ async function showSession(session){
 $("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوحة المالكة…");await refreshOwnerDashboard();status("تم تحديث الملخص.");};
 $("refreshSpecialistBrains").onclick=loadSpecialistBrains;
 let activeConversationId=null;
-let athrVoiceReplies=false, athrRecognition=null, athrRecorder=null, athrRecordChunks=[];
+let athrVoiceReplies=false, athrRecognition=null, athrRecorder=null, athrPreviewObjectUrl=null;
+function clearAthrAttachmentPreview(){
+ const host=$("chatAttachmentPreview");
+ if(athrPreviewObjectUrl){URL.revokeObjectURL(athrPreviewObjectUrl);athrPreviewObjectUrl=null;}
+ host.textContent="";host.hidden=true;
+}
 function speakAthr(text){
  if(!athrVoiceReplies||!("speechSynthesis" in window))return;
  window.speechSynthesis.cancel();
@@ -834,11 +839,11 @@ function startSpeechInput(){
 $("speechInputBtn").onclick=startSpeechInput;
 $("voiceReplyBtn").onclick=()=>{athrVoiceReplies=!athrVoiceReplies;$("voiceReplyBtn").setAttribute("aria-pressed",String(athrVoiceReplies));$("voiceReplyBtn").textContent=athrVoiceReplies?"🔊 الصوت: يعمل":"🔊 الصوت: متوقف";if(!athrVoiceReplies&&"speechSynthesis"in window)speechSynthesis.cancel();};
 $("attachImageBtn").onclick=()=>$("chatImageInput").click();
-$("chatImageInput").onchange=()=>{const file=$("chatImageInput").files?.[0];if(!file)return;const host=$("chatAttachmentPreview");host.hidden=false;host.textContent="";const img=document.createElement("img");img.alt="معاينة الصورة المرفقة";img.src=URL.createObjectURL(file);host.append(img);const note=document.createElement("small");note.textContent="معاينة محلية للصورة. إرسال الصورة للتحليل أو التعديل يحتاج تفعيل خدمة معالجة الصور في الخادم.";host.append(note);};
+$("chatImageInput").onchange=()=>{const file=$("chatImageInput").files?.[0];if(!file)return;if(!file.type.startsWith("image/")){chatStatus("اختاري ملف صورة صالحًا.",true);$("chatImageInput").value="";return;}if(file.size>10*1024*1024){chatStatus("حجم الصورة أكبر من 10 ميجابايت. اختاري صورة أصغر.",true);$("chatImageInput").value="";return;}clearAthrAttachmentPreview();const host=$("chatAttachmentPreview");host.hidden=false;const img=document.createElement("img");img.alt="معاينة الصورة المرفقة";athrPreviewObjectUrl=URL.createObjectURL(file);img.src=athrPreviewObjectUrl;host.append(img);const note=document.createElement("small");note.textContent="معاينة محلية للصورة. إرسال الصورة للتحليل أو التعديل يحتاج تفعيل خدمة معالجة الصور في الخادم.";host.append(note);};
 $("recordNoteBtn").onclick=async()=>{
  if(athrRecorder?.state==="recording"){athrRecorder.stop();$("recordNoteBtn").textContent="⏺ تسجيل صوتي";return;}
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){chatStatus("تسجيل الصوت غير مدعوم على هذا المتصفح أو الجهاز.",true);return;}
- try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});athrRecordChunks=[];athrRecorder=new MediaRecorder(stream);athrRecorder.ondataavailable=e=>{if(e.data.size)athrRecordChunks.push(e.data);};athrRecorder.onstop=()=>{const blob=new Blob(athrRecordChunks,{type:athrRecorder.mimeType||"audio/webm"});const url=URL.createObjectURL(blob);const host=$("chatAttachmentPreview");host.hidden=false;const audio=document.createElement("audio");audio.controls=true;audio.src=url;host.append(audio);const note=document.createElement("small");note.textContent="تسجيل صوتي محفوظ مؤقتًا في هذه الصفحة للمعاينة فقط؛ لم يُرسل إلى محادثة أخرى.";host.append(note);stream.getTracks().forEach(t=>t.stop());};athrRecorder.start();$("recordNoteBtn").textContent="⏹ إيقاف التسجيل";chatStatus("جارٍ تسجيل الصوت…");}catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
+ try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});clearAthrAttachmentPreview();const chunks=[];const recorder=new MediaRecorder(stream);athrRecorder=recorder;recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};recorder.onerror=()=>{stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;$("recordNoteBtn").textContent="⏺ تسجيل صوتي";chatStatus("تعذر إكمال تسجيل الصوت.",true);};recorder.onstop=()=>{const blob=new Blob(chunks,{type:recorder.mimeType||"audio/webm"});const host=$("chatAttachmentPreview");host.hidden=false;const audio=document.createElement("audio");audio.controls=true;athrPreviewObjectUrl=URL.createObjectURL(blob);audio.src=athrPreviewObjectUrl;host.append(audio);const note=document.createElement("small");note.textContent="تسجيل صوتي محفوظ مؤقتًا في هذه الصفحة للمعاينة فقط؛ لم يُرسل إلى محادثة أخرى.";host.append(note);stream.getTracks().forEach(t=>t.stop());if(athrRecorder===recorder)athrRecorder=null;$("recordNoteBtn").textContent="⏺ تسجيل صوتي";};recorder.start();$("recordNoteBtn").textContent="⏹ إيقاف التسجيل";chatStatus("جارٍ تسجيل الصوت…");catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
 };
 function addChatMessage(role,content){const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message "+role;el.textContent=content;host.append(el);host.scrollTop=host.scrollHeight;}
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
