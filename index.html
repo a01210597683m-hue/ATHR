@@ -572,6 +572,28 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
  #chatWorkspace .chat-status{margin-inline:12px}
 }
 
+
+/* ATHR plans and wallet — additive account module */
+#billingPanel{grid-column:1/-1;margin-top:18px;padding:20px;border:1px solid rgba(240,207,145,.24);border-radius:20px;background:linear-gradient(145deg,rgba(27,34,75,.88),rgba(12,18,43,.94))}
+#billingPanel .billing-intro{color:var(--muted);font-size:12px;line-height:1.8;margin:5px 0 16px}
+.billing-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.billing-stat{padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(9,14,36,.48)}
+.billing-stat small{display:block;color:var(--muted);font-size:10px}.billing-stat strong{display:block;margin-top:5px;font-size:16px;color:var(--gold)}
+.billing-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:12px}
+.billing-plan{min-width:0;padding:15px;border:1px solid var(--line);border-radius:16px;background:rgba(21,28,63,.76)}
+.billing-plan.current{border-color:rgba(139,224,187,.62);box-shadow:inset 0 0 0 1px rgba(139,224,187,.12)}
+.billing-plan h4{margin:0 0 4px;font-size:15px;color:var(--gold)}
+.billing-plan p{margin:0 0 9px;color:var(--muted);font-size:11px;line-height:1.7}
+.billing-plan ul{margin:0;padding-inline-start:18px;color:#d9d9ed;font-size:11px;line-height:1.9}
+.billing-plan .billing-price{display:block;margin:8px 0;color:var(--cyan);font-size:11px;font-weight:800}
+.billing-plan button{width:100%;margin-top:12px;font-size:11px}
+.billing-plan button:disabled{opacity:.72}
+.billing-packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-top:10px}
+.billing-pack{padding:12px;border:1px solid var(--line);border-radius:13px;text-align:center;background:rgba(21,28,63,.62)}
+.billing-pack strong,.billing-pack small{display:block}.billing-pack strong{color:var(--gold);font-size:15px}.billing-pack small{color:var(--muted);font-size:10px;margin-top:4px}
+.billing-footnote{font-size:10px;color:var(--muted);line-height:1.8;margin:13px 0 0}
+@media(max-width:620px){.billing-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.billing-stat{padding:10px 7px}.billing-stat strong{font-size:13px}.billing-plans{grid-template-columns:1fr}.billing-packs{grid-template-columns:1fr 1fr 1fr}}
+
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
@@ -655,6 +677,22 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
   </div>
   <div id="signedInView" hidden>
     <h3 id="accountHeading">حساب ATHR</h3><p id="accountEmail"></p>
+    <section id="billingPanel" aria-labelledby="billingHeading">
+      <div class="eyebrow">ATHR MEMBERSHIPS</div>
+      <h3 id="billingHeading">باقتك ومميزات ATHR</h3>
+      <p class="billing-intro">استخدمي ATHR براحتك. الخطة المجانية مستمرة، والترقية اختيارية لفتح حدود وإمكانيات أوسع. لا توجد إعلانات في أي باقة.</p>
+      <div class="billing-summary">
+        <div class="billing-stat"><small>باقتك الحالية</small><strong id="billingCurrentPlan">المجانية</strong></div>
+        <div class="billing-stat"><small>الرصيد الإضافي</small><strong id="billingCreditBalance">—</strong></div>
+        <div class="billing-stat"><small>نوع الحساب</small><strong id="billingAudience">متاح للأفراد والشركات</strong></div>
+      </div>
+      <h4 style="margin:18px 0 8px">اختاري مستوى الإمكانيات</h4>
+      <div id="billingPlans" class="billing-plans"><p class="note">جارٍ تحميل الباقات…</p></div>
+      <h4 style="margin:20px 0 8px">رصيد إضافي عند الحاجة</h4>
+      <p class="billing-intro">اشتري رصيدًا إضافيًا فقط عندما تحتاجين استخدامًا أكثر، من غير تغيير اشتراكك.</p>
+      <div id="billingPacks" class="billing-packs"><p class="note">جارٍ تحميل خيارات الرصيد…</p></div>
+      <p class="billing-footnote">الأسعار والدفع غير مفعّلين بعد. لن يتم تحصيل أي مبلغ أو خصم رصيد قبل إعلان السعر وربط وسيلة دفع آمنة وتأكيد العملية.</p>
+    </section>
     <label style="display:flex;gap:10px;align-items:flex-start;margin-top:14px;color:var(--muted);font-size:13px;line-height:1.7"><input id="settingsModel" type="checkbox" style="width:20px;height:20px;flex:none"><span>السماح اختياريًا باستخدام المحادثات المؤهلة لتحسين نماذج ATHR.</span></label>
     <label style="display:block;margin-top:14px;color:var(--muted);font-size:13px">لغة الواجهة<select id="prefLocale" style="display:block;margin-top:6px"><option value="ar">العربية</option><option value="en">English</option></select></label>
     <label style="display:block;margin-top:14px;color:var(--muted);font-size:13px">عرض الترجمة العربية<select id="arabicMode" style="display:block;margin-top:6px"><option value="always">دائمًا</option><option value="on_demand">عند الطلب</option><option value="hidden">إخفاء</option></select></label>
@@ -797,10 +835,52 @@ async function loadSpecialistBrains(){
   card.append(title,desc,state,row);host.append(card);
  }
 }
+async function loadBillingOverview(user){
+ const plansHost=$("billingPlans"),packsHost=$("billingPacks");
+ plansHost.textContent="جارٍ تحميل الباقات…";packsHost.textContent="جارٍ تحميل خيارات الرصيد…";
+ const [plansResult,entitlementResult,walletResult,packsResult]=await Promise.all([
+  supabase.from("athr_billing_plans").select("plan_code,name_ar,tagline_ar,description_ar,features,price_minor,currency,billing_interval,display_order").eq("is_active",true).order("display_order"),
+  supabase.from("athr_user_entitlements").select("plan_code,status,current_period_end").eq("user_id",user.id).maybeSingle(),
+  supabase.from("athr_credit_wallets").select("balance,lifetime_purchased").eq("user_id",user.id).maybeSingle(),
+  supabase.from("athr_credit_packs").select("pack_code,name_ar,credits,price_minor,currency").eq("is_active",true).order("display_order")
+ ]);
+ if(plansResult.error||entitlementResult.error||walletResult.error||packsResult.error){
+  plansHost.textContent="تعذر تحميل بيانات الباقات الآن. يمكنك متابعة استخدام حسابك بشكل طبيعي.";
+  packsHost.textContent="خيارات الرصيد غير متاحة مؤقتًا.";return;
+ }
+ const current=entitlementResult.data?.plan_code||"free";
+ const names={free:"المجانية",plus:"بلس",pro:"برو",business:"الأعمال"};
+ $("billingCurrentPlan").textContent=names[current]||"المجانية";
+ $("billingCreditBalance").textContent=String(walletResult.data?.balance??0);
+ $("billingAudience").textContent="أفراد وشركات";
+ plansHost.textContent="";
+ for(const plan of (plansResult.data||[])){
+  const card=document.createElement("article");card.className="billing-plan"+(plan.plan_code===current?" current":"");
+  const title=document.createElement("h4");title.textContent=plan.name_ar;
+  const tagline=document.createElement("p");tagline.textContent=plan.tagline_ar;
+  const desc=document.createElement("p");desc.textContent=plan.description_ar;
+  const price=document.createElement("small");price.className="billing-price";
+  price.textContent=plan.plan_code==="free"?"مجانية باستمرار":"السعر سيُعلن قبل إتاحة الدفع";
+  const list=document.createElement("ul");
+  for(const feature of (Array.isArray(plan.features)?plan.features:[])){const li=document.createElement("li");li.textContent=feature;list.append(li);}
+  const button=document.createElement("button");button.type="button";button.disabled=true;
+  button.textContent=plan.plan_code===current?"باقتك الحالية":(plan.plan_code==="business"?"تجهيز باقة الشركة":"الترقية ستتاح قريبًا");
+  card.append(title,tagline,desc,price,list,button);plansHost.append(card);
+ }
+ packsHost.textContent="";
+ for(const pack of (packsResult.data||[])){
+  const card=document.createElement("article");card.className="billing-pack";
+  const amount=document.createElement("strong");amount.textContent=String(pack.credits)+" رصيد";
+  const name=document.createElement("small");name.textContent=pack.name_ar;
+  const state=document.createElement("small");state.textContent="الشراء سيتاح بعد ربط الدفع";
+  card.append(amount,name,state);packsHost.append(card);
+ }
+}
 async function showSession(session){
  const user=session?.user;$("signedOutView").hidden=!!user;$("signedInView").hidden=!user;
  $("ownerControlCenter").hidden=true;if(!user){window.updateAthrPageAccess?.();return;}
  $("accountEmail").textContent=user.email||"";
+ await loadBillingOverview(user);
  const [a,b]=await Promise.all([supabase.from("privacy_settings").select("model_improvement_opt_in").eq("user_id",user.id).maybeSingle(),supabase.from("user_preferences").select("interface_locale,arabic_translation_mode").eq("user_id",user.id).maybeSingle()]);
  if(a.error||b.error){status((a.error||b.error).message,true);return;}
  $("settingsModel").checked=!!a.data?.model_improvement_opt_in;$("prefLocale").value=b.data?.interface_locale||"ar";$("arabicMode").value=b.data?.arabic_translation_mode||"always";
