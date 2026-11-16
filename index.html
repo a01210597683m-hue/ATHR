@@ -631,6 +631,62 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
 .billing-footnote{font-size:10px;color:var(--muted);line-height:1.8;margin:13px 0 0}
 @media(max-width:620px){.billing-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.billing-stat{padding:10px 7px}.billing-stat strong{font-size:13px}.billing-plans{grid-template-columns:1fr}.billing-packs{grid-template-columns:1fr 1fr 1fr}}
 
+
+/* ATHR premium mobile workspace refresh */
+:root{--athr-glow:rgba(157,112,255,.55);--athr-blue:#54d8ff;--athr-lilac:#c7a8ff}
+body{background:radial-gradient(ellipse at 50% -12%,#3c2484 0%,#17164c 32%,#090d29 74%,#05091b 100%)}
+header{background:rgba(8,8,35,.88);border-bottom-color:rgba(180,143,255,.34);box-shadow:0 8px 32px #07051d66}
+.brand{color:#f4d99c;text-shadow:0 0 20px #a779ff99}
+.mark{box-shadow:0 0 18px #9c72ff99,inset 0 0 18px #d7b66c44}
+.card,.lesson,.room-card{background:linear-gradient(145deg,rgba(31,29,88,.94),rgba(12,19,57,.97));border:1px solid rgba(176,146,255,.42);box-shadow:0 10px 28px rgba(2,3,25,.42),inset 0 1px 0 rgba(255,255,255,.08)}
+.card{position:relative;overflow:hidden}
+.card:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(177,127,255,.12),transparent 48%,rgba(50,193,255,.06))}
+.card:hover{border-color:#c3a3ff;box-shadow:0 0 28px rgba(143,103,255,.3)}
+.ico{background:linear-gradient(145deg,rgba(105,74,215,.55),rgba(23,47,119,.65));border:1px solid rgba(110,211,255,.4);box-shadow:0 0 18px rgba(139,104,255,.25)}
+.hero h1{text-shadow:0 0 12px #a16dff,0 0 32px #7a54ff88}
+.hero p{color:#d7d2f4}
+#chatWorkspace{margin:28px 0 30px;scroll-margin-top:0}
+#chatWorkspace>.section-heading{max-width:1240px;margin:0 auto 14px;padding-inline:12px}
+.chat-shell{width:100%;max-width:1400px;margin-inline:auto;min-height:calc(100svh - 170px);height:calc(100svh - 170px);max-height:980px;grid-template-columns:250px minmax(0,1fr);border-radius:28px;border:1px solid rgba(185,150,255,.58);background:linear-gradient(150deg,rgba(18,17,65,.97),rgba(7,13,43,.98));box-shadow:0 0 45px rgba(126,82,255,.22),0 28px 80px #02041799}
+.chat-sidebar{background:linear-gradient(180deg,rgba(51,36,116,.96),rgba(12,20,59,.98));border-inline-end-color:rgba(177,145,255,.28)}
+.chat-orb,.chat-big-orb{box-shadow:0 0 28px rgba(167,111,255,.65),0 0 52px rgba(64,190,255,.16)}
+.chat-top{background:rgba(13,16,54,.82);border-bottom-color:rgba(184,150,255,.24)}
+.chat-top strong{font-size:17px}.chat-top small{font-size:12px}
+.chat-welcome{max-width:760px}
+.chat-welcome h3{font-size:clamp(25px,4vw,38px);text-shadow:0 0 22px rgba(159,119,255,.42)}
+.chat-welcome>p{font-size:15px}
+.chat-prompts>div{border-color:rgba(173,142,255,.36);background:linear-gradient(145deg,rgba(73,50,148,.38),rgba(24,36,89,.5));box-shadow:inset 0 1px 0 rgba(255,255,255,.07)}
+.chat-composer{border-radius:22px;background:linear-gradient(100deg,rgba(64,43,126,.85),rgba(31,40,104,.88));border-color:rgba(193,160,255,.58);box-shadow:0 0 24px rgba(131,91,255,.18);padding:12px}
+.chat-composer textarea{font-size:16px;min-height:48px}
+.chat-composer button{width:50px;height:50px;border-radius:50%;background:linear-gradient(145deg,#bd8aff,#6b35df);box-shadow:0 0 22px rgba(172,108,255,.5)}
+.chat-tools{padding:12px 18px;gap:9px}
+.chat-tools button,.chat-tools select{border-color:rgba(177,145,255,.34);background:rgba(44,40,111,.7)}
+.chat-disclaimer{padding-bottom:18px}
+@media(max-width:700px){
+ body{overflow-x:hidden}
+ #chatWorkspace{margin:20px -15px 24px;width:calc(100% + 30px)}
+ #chatWorkspace>.section-heading{padding-inline:16px}
+ #chatWorkspace>.section-heading p{font-size:12px}
+ .chat-shell{width:100%;height:calc(100svh - 112px);min-height:620px;max-height:none;border-radius:25px 25px 0 0;border-inline:0;border-bottom:0;grid-template-columns:minmax(0,1fr)}
+ .chat-sidebar{display:none}
+ .chat-main{min-height:0}
+ .chat-top{position:sticky;top:0;z-index:3;padding:13px 15px}
+ .chat-welcome{padding:24px 16px;margin:0 auto}
+ .chat-big-orb{width:88px;height:88px;font-size:42px}
+ .chat-prompts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:20px}
+ .chat-prompts>div{display:block;padding:12px 10px;min-height:74px}
+ .chat-prompts strong{font-size:12px;margin-top:6px}
+ .chat-prompts small{font-size:10px}
+ .chat-tools{padding:10px 12px;gap:7px}
+ .chat-tools button{font-size:11px;padding:8px 10px;min-height:38px}
+ .tutor-setting{font-size:11px}
+ .chat-composer{margin:0 10px;padding:9px;gap:7px}
+ .chat-composer textarea{font-size:16px;min-height:44px}
+ .chat-composer button{width:46px;height:46px;min-height:46px}
+ .chat-disclaimer{font-size:9px}
+}
+@media(max-width:390px){.chat-prompts{grid-template-columns:1fr 1fr}.chat-tools{gap:5px}.chat-tools button{padding:7px 8px}}
+
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
@@ -662,7 +718,7 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
 </section>
 
 <section id="chatWorkspace" aria-labelledby="chatHeading">
- <div class="section-heading"><h2 class="section-title" id="chatHeading">مساحة المساعد الذكي</h2><p>مساعد ATHR المستقل. ستعمل المحادثة عند تجهيز خادم النموذج الخاص بـ ATHR وتفعيل العقل المختار.</p></div>
+ <div class="section-heading"><h2 class="section-title" id="chatHeading">مساحة المساعد الذكي</h2><p>مساحة محادثة ATHR الكاملة. حالة الاتصال بالعقل المختار موضحة داخل المحادثة.</p></div>
  <div class="chat-shell">
   <aside class="chat-sidebar"><div class="chat-brand"><span class="chat-orb">أ</span><div><strong>ATHR Assistant</strong><small>مساحتك الذكية</small></div></div>
    <button type="button" class="chat-new" id="newChatBtn">＋ محادثة جديدة</button>
@@ -673,8 +729,8 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
    <div class="chat-side-foot">محادثاتك خاصة بحسابك. لا يوجد اتصال بمحرك ذكاء اصطناعي تابع لشركة خارجية محددة داخل كود ATHR.</div>
   </aside>
   <div class="chat-main">
-   <div class="chat-top"><div><strong>المساعد الذكي</strong><small><span class="online-dot"></span> محرك ATHR المستقل · قيد الإعداد</small></div><div class="chat-top-actions"><button type="button" id="toggleChatHistoryBtn" aria-expanded="false" aria-controls="chatHistoryPanel">☷ سجل المحادثات</button><span class="chat-top-mark">ATHR ✦</span></div></div><div id="chatHistoryPanel" class="chat-history-panel" hidden><div class="chat-history-heading"><strong>محادثاتك السابقة</strong><small>محفوظة في حسابك</small></div><div id="chatHistory" class="chat-history" aria-live="polite"><p class="chat-history-empty">سجّلي الدخول لعرض محادثاتك.</p></div></div>
-   <div class="chat-welcome" id="chatWelcome"><div class="chat-big-orb">أ</div><span class="chat-kicker">THINK · LEARN · CREATE</span><h3>أهلًا بك، نبدأ منين؟</h3><p>اختاري العقل المناسب واكتبي رسالتك. لن تُرسل الرسائل إلى أي محرك حتى يتم إعداد خادم ATHR المستقل.</p>
+   <div class="chat-top"><div><strong>المساعد الذكي</strong><small><span class="online-dot"></span> حالة الاتصال تظهر عند بدء المحادثة</small></div><div class="chat-top-actions"><button type="button" id="toggleChatHistoryBtn" aria-expanded="false" aria-controls="chatHistoryPanel">☷ سجل المحادثات</button><span class="chat-top-mark">ATHR ✦</span></div></div><div id="chatHistoryPanel" class="chat-history-panel" hidden><div class="chat-history-heading"><strong>محادثاتك السابقة</strong><small>محفوظة في حسابك</small></div><div id="chatHistory" class="chat-history" aria-live="polite"><p class="chat-history-empty">سجّلي الدخول لعرض محادثاتك.</p></div></div>
+   <div class="chat-welcome" id="chatWelcome"><div class="chat-big-orb">أ</div><span class="chat-kicker">THINK · LEARN · CREATE</span><h3>أهلًا بك، نبدأ منين؟</h3><p>اختاري المجال واكتبي رسالتك. ستظهر حالة الخدمة بوضوح قبل إرسال أي طلب.</p>
     <div class="chat-prompts"><div>✧ <strong>ساعدني أفكر</strong><small>رتّب فكرة تشغل بالك</small></div><div>◈ <strong>علّمني شيئًا جديدًا</strong><small>ابدأ رحلة تعلّم</small></div><div>⌘ <strong>خطّط لمشروعي</strong><small>حوّل الهدف إلى خطوات</small></div></div>
    </div>
    <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
