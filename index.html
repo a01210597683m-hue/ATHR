@@ -273,7 +273,11 @@ a:hover{color:#e2d9ff}
 @keyframes athrLogoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-7px) scale(1.012)}}
 @media(max-width:600px){.athr-hero-logo{width:min(285px,82vw);border-radius:20px}}
 @media(prefers-reduced-motion:reduce){.athr-hero-logo{animation:none!important}}
-\n/* Keep the animated brand mark consistent in the header and hero. */\n.brand-logo{display:block;width:44px;height:44px;object-fit:contain;border-radius:14px;filter:drop-shadow(0 0 14px rgba(157,126,255,.35))}\n@media(max-width:600px){.brand-logo{width:40px;height:40px}}\n
+
+/* Keep the animated brand mark consistent in the header and hero. */
+.brand-logo{display:block;width:44px;height:44px;object-fit:contain;border-radius:14px;filter:drop-shadow(0 0 14px rgba(157,126,255,.35))}
+@media(max-width:600px){.brand-logo{width:40px;height:40px}}
+
 /* ATHR app iconography, spacing and color hierarchy — v2 */
 #mainNavigation{gap:9px}
 #mainNavigation a{gap:8px;min-height:44px;padding:9px 17px;font-size:13px}
@@ -397,7 +401,8 @@ a:hover{color:#e2d9ff}
 #page-owner #ownerControlCenter{margin-top:0!important}
 #page-brains .room-card,#page-learning .room-card,#page-projects .room-card,#page-creative .room-card,#page-care .room-card,#page-worlds .room-card{margin-top:12px}
 @media(max-width:700px){.app-page{min-height:65vh;padding:12px 0 24px}.app-page-title{margin:8px 0 18px}}
-\n
+
+
 /* ATHR complete app-shell refinement — compact, responsive, functional-first */
 :root{
  --app-bg:#090d20;--app-surface:#111832;--app-surface-2:#151f3d;
@@ -538,7 +543,8 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
  .chat-brand small{display:none}
 }
 @media(prefers-reduced-motion:reduce){.app-page{animation:none}}
-\n</style></head>
+
+</style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
 <nav id="mainNavigation" aria-label="التنقل الرئيسي"><a href="#page-home"><span aria-hidden="true">⌂</span>الرئيسية</a><a href="#page-services"><span aria-hidden="true">▦</span>الخدمات</a><a href="#page-languages"><span aria-hidden="true">🌍</span>اللغات</a><a href="#page-account"><span aria-hidden="true">👤</span>حسابي</a><a href="#page-owner" id="desktopOwnerLink" hidden><span aria-hidden="true">✦</span>مركز المالكة</a></nav>
