@@ -115,3 +115,22 @@ jobs:
           for file in /tmp/athr-inline-scripts/*.mjs; do
             node --check "$file"
           done
+
+      - name: Verify full-screen mobile chat and cache invalidation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          page = Path("index.html").read_text(encoding="utf-8")
+          sw = Path("sw.js").read_text(encoding="utf-8")
+          checks = {
+              "home page chat is viewport sized": "ATHR actual app-page viewport layout — v3" in page and "#page-home #chatWorkspace>.chat-shell" in page,
+              "Android safe-area spacing": "env(safe-area-inset-bottom)" in page,
+              "two-column desktop chat": "grid-template-columns:250px minmax(0,1fr)" in page,
+              "new service worker cache version": 'CACHE_NAME = "athr-shell-v3"' in sw,
+              "service worker claims clients": "self.clients.claim()" in sw,
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit("Viewport/cache checks failed: " + ", ".join(failed))
+          print("Full-screen mobile chat and cache invalidation checks passed.")
+          PY

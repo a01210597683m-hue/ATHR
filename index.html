@@ -687,6 +687,47 @@ header{background:rgba(8,8,35,.88);border-bottom-color:rgba(180,143,255,.34);box
 }
 @media(max-width:390px){.chat-prompts{grid-template-columns:1fr 1fr}.chat-tools{gap:5px}.chat-tools button{padding:7px 8px}}
 
+
+/* ATHR actual app-page viewport layout — v3 */
+.app-page#page-home{width:100%;max-width:none;min-height:calc(100svh - 150px);padding:0;margin:0}
+main:has(>.app-page#page-home:not([hidden])){max-width:none;width:100%;padding:0 0 76px;margin:0}
+#page-home #chatWorkspace{width:100%;max-width:none;margin:0;padding:18px clamp(10px,2vw,28px) 22px;min-height:calc(100svh - 145px);display:flex;flex-direction:column}
+#page-home #chatWorkspace>.section-heading{width:100%;max-width:1400px;margin:0 auto 12px;padding:0 4px}
+#page-home #chatWorkspace>.chat-shell{width:100%;max-width:1400px;height:calc(100svh - 220px);min-height:570px;max-height:none;flex:1;margin:0 auto}
+#page-home .chat-main{min-height:0;overflow:hidden}
+#page-home .chat-welcome{max-width:900px}
+#page-home .chat-prompts{grid-template-columns:repeat(3,minmax(0,1fr))}
+#page-home .chat-composer{margin-inline:clamp(12px,3vw,34px)}
+@media(max-width:700px){
+ main:has(>.app-page#page-home:not([hidden])){padding:0 0 calc(72px + env(safe-area-inset-bottom))}
+ .app-page#page-home{min-height:calc(100svh - 126px)}
+ #page-home #chatWorkspace{padding:8px 0 0;min-height:calc(100svh - 126px);margin:0}
+ #page-home #chatWorkspace>.section-heading{padding:0 14px;margin:0 0 8px}
+ #page-home #chatWorkspace>.section-heading .section-title{font-size:18px}
+ #page-home #chatWorkspace>.section-heading p{font-size:11px;margin-top:2px}
+ #page-home #chatWorkspace>.chat-shell{height:calc(100svh - 190px);min-height:510px;max-height:none;flex:1;border-radius:22px 22px 0 0;border-inline:0;border-bottom:0}
+ #page-home .chat-main{height:100%;min-height:0}
+ #page-home .chat-welcome{padding:18px 13px;margin:auto}
+ #page-home .chat-big-orb{width:74px;height:74px;margin-bottom:12px;font-size:34px}
+ #page-home .chat-prompts{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:16px}
+ #page-home .chat-prompts>div{display:grid;grid-template-columns:24px 1fr;align-items:center;min-height:66px;padding:9px 8px}
+ #page-home .chat-prompts strong{font-size:11px;margin:0}
+ #page-home .chat-prompts small{font-size:9px;grid-column:2}
+ #page-home .chat-top{padding:11px 13px}
+ #page-home .chat-top-actions{gap:6px}
+ #page-home .chat-top-actions button{font-size:10px;padding:7px 9px;min-height:34px}
+ #page-home .chat-tools{padding:8px 10px;gap:6px}
+ #page-home .chat-tools button,#page-home .chat-tools select{font-size:10px;min-height:34px;padding:6px 8px}
+ #page-home .chat-composer{margin:0 8px;padding:8px;gap:7px}
+ #page-home .chat-composer textarea{font-size:16px;min-height:42px}
+ #page-home .chat-composer button{width:44px;height:44px;min-height:44px}
+ #page-home .chat-disclaimer{padding:7px 10px calc(10px + env(safe-area-inset-bottom));font-size:9px}
+}
+@media(max-width:390px){
+ #page-home .chat-prompts strong{font-size:10px}
+ #page-home .chat-prompts small{display:none}
+}
+
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
