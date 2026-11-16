@@ -544,6 +544,31 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
 }
 @media(prefers-reduced-motion:reduce){.app-page{animation:none}}
 
+
+/* ATHR full-screen conversation + voice-first controls (no camera/video) */
+#chatWorkspace{margin:0!important;scroll-margin-top:0}
+#page-home #chatWorkspace{margin:0!important}
+#chatWorkspace .section-heading{display:none}
+#chatWorkspace .chat-shell{grid-template-columns:220px minmax(0,1fr);height:calc(100dvh - 104px);min-height:620px;max-height:none;border-radius:0;border-inline:0}
+#chatWorkspace .chat-main{min-height:0;height:100%}
+#chatWorkspace .chat-messages{flex:1;min-height:180px;max-height:none;overflow-y:auto}
+#chatWorkspace .chat-welcome{width:min(760px,100%)}
+.chat-tools{display:flex;gap:8px;flex-wrap:wrap;margin:8px 22px 0}
+.chat-tools button{padding:9px 12px;border:1px solid rgba(185,169,255,.22);border-radius:12px;background:rgba(137,113,230,.12);color:var(--text);font-size:12px}
+.chat-tools button[aria-pressed="true"]{background:rgba(84,217,244,.18);border-color:var(--cyan)}
+.chat-attachment-preview{margin:8px 22px;padding:8px;border:1px solid var(--line);border-radius:12px}
+.chat-attachment-preview img{display:block;max-width:min(240px,100%);max-height:180px;object-fit:contain;border-radius:8px}
+.chat-attachment-preview audio{width:min(360px,100%)}
+#chatWorkspace .chat-composer{margin-top:8px}
+@media(max-width:700px){
+ #chatWorkspace .chat-shell{display:flex;flex-direction:column;height:calc(100dvh - 116px);min-height:540px;border-radius:0}
+ #chatWorkspace .chat-sidebar{display:none}
+ #chatWorkspace .chat-messages{padding:10px 13px}
+ #chatWorkspace .chat-composer{margin-inline:10px}
+ #chatWorkspace .chat-tools{margin-inline:10px}
+ #chatWorkspace .chat-status{margin-inline:12px}
+}
+
 </style></head>
 <body>
 <header><div class="brand"><img class="brand-logo" src="https://tkwzefzfgpbiljchpxfd.supabase.co/functions/v1/athr-brand-logo" alt="شعار ATHR المتحرك" width="44" height="44" fetchpriority="high"><span>ATHR</span></div><select id="uiLang" aria-label="لغة الواجهة"><option value="ar">العربية</option><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="zh">中文</option></select></header>
@@ -592,7 +617,15 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
    </div>
    <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
    <p id="chatStatus" class="chat-status" role="status">المحرك المستقل قيد التجهيز؛ ستظهر هنا حالة الإرسال بوضوح.</p>
-   <div class="chat-composer"><textarea id="chatInput" rows="2" placeholder="اكتبي رسالتك هنا…" aria-label="رسالتك"></textarea><button type="button" id="sendChatBtn" aria-label="إرسال الرسالة">↑</button></div>
+   <div class="chat-tools" aria-label="أدوات المحادثة">
+  <button type="button" id="attachImageBtn" title="إرفاق صورة" aria-label="إرفاق صورة">＋ صورة</button>
+  <input id="chatImageInput" type="file" accept="image/*" hidden>
+  <button type="button" id="speechInputBtn" title="تحدث لتحويل كلامك إلى كتابة" aria-label="تحويل الكلام إلى كتابة">🎙️ إملاء</button>
+  <button type="button" id="voiceReplyBtn" aria-pressed="false" title="تشغيل الردود صوتيًا">🔊 الصوت: متوقف</button>
+  <button type="button" id="recordNoteBtn" title="تسجيل مقطع صوتي محلي">⏺ تسجيل صوتي</button>
+ </div>
+ <div id="chatAttachmentPreview" class="chat-attachment-preview" hidden></div>
+ <div class="chat-composer"><textarea id="chatInput" rows="2" placeholder="اكتبي رسالتك هنا…" aria-label="رسالتك"></textarea><button type="button" id="sendChatBtn" aria-label="إرسال الرسالة">↑</button></div>
    <p class="chat-disclaimer">لا ترسلي كلمات مرور أو بيانات دفع أو معلومات شديدة الحساسية.</p>
   </div>
  </div>
@@ -771,6 +804,35 @@ async function showSession(session){
 $("refreshOwnerDashboard").onclick=async()=>{status("جارٍ تحديث لوحة المالكة…");await refreshOwnerDashboard();status("تم تحديث الملخص.");};
 $("refreshSpecialistBrains").onclick=loadSpecialistBrains;
 let activeConversationId=null;
+let athrVoiceReplies=false, athrRecognition=null, athrRecorder=null, athrRecordChunks=[];
+function speakAthr(text){
+ if(!athrVoiceReplies||!("speechSynthesis" in window))return;
+ window.speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.lang=(document.documentElement.lang||"ar-EG");
+ utterance.rate=1; utterance.pitch=1;
+ window.speechSynthesis.speak(utterance);
+}
+function startSpeechInput(){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){chatStatus("الإملاء الصوتي غير مدعوم في هذا المتصفح. جرّبي Chrome على الهاتف.",true);return;}
+ if(athrRecognition){athrRecognition.stop();athrRecognition=null;return;}
+ athrRecognition=new SR();athrRecognition.lang=$("chatBrain").value==="languages"?"en-US":"ar-EG";athrRecognition.interimResults=true;athrRecognition.continuous=false;
+ $("speechInputBtn").textContent="⏹ إيقاف الإملاء";chatStatus("اتكلمي الآن، وسيظهر كلامك مكتوبًا…");
+ athrRecognition.onresult=e=>{let finalText="",interim="";for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)finalText+=e.results[i][0].transcript;else interim+=e.results[i][0].transcript;}if(finalText)$("chatInput").value=($("chatInput").value+" "+finalText).trim();if(interim)chatStatus("أسمعك: "+interim);};
+ athrRecognition.onerror=e=>chatStatus("تعذر الإملاء الصوتي: "+e.error,true);
+ athrRecognition.onend=()=>{$("speechInputBtn").textContent="🎙️ إملاء";athrRecognition=null;};
+ athrRecognition.start();
+}
+$("speechInputBtn").onclick=startSpeechInput;
+$("voiceReplyBtn").onclick=()=>{athrVoiceReplies=!athrVoiceReplies;$("voiceReplyBtn").setAttribute("aria-pressed",String(athrVoiceReplies));$("voiceReplyBtn").textContent=athrVoiceReplies?"🔊 الصوت: يعمل":"🔊 الصوت: متوقف";if(!athrVoiceReplies&&"speechSynthesis"in window)speechSynthesis.cancel();};
+$("attachImageBtn").onclick=()=>$("chatImageInput").click();
+$("chatImageInput").onchange=()=>{const file=$("chatImageInput").files?.[0];if(!file)return;const host=$("chatAttachmentPreview");host.hidden=false;host.textContent="";const img=document.createElement("img");img.alt="معاينة الصورة المرفقة";img.src=URL.createObjectURL(file);host.append(img);const note=document.createElement("small");note.textContent="معاينة محلية للصورة. إرسال الصورة للتحليل أو التعديل يحتاج تفعيل خدمة معالجة الصور في الخادم.";host.append(note);};
+$("recordNoteBtn").onclick=async()=>{
+ if(athrRecorder?.state==="recording"){athrRecorder.stop();$("recordNoteBtn").textContent="⏺ تسجيل صوتي";return;}
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){chatStatus("تسجيل الصوت غير مدعوم على هذا المتصفح أو الجهاز.",true);return;}
+ try{const stream=await navigator.mediaDevices.getUserMedia({audio:true});athrRecordChunks=[];athrRecorder=new MediaRecorder(stream);athrRecorder.ondataavailable=e=>{if(e.data.size)athrRecordChunks.push(e.data);};athrRecorder.onstop=()=>{const blob=new Blob(athrRecordChunks,{type:athrRecorder.mimeType||"audio/webm"});const url=URL.createObjectURL(blob);const host=$("chatAttachmentPreview");host.hidden=false;const audio=document.createElement("audio");audio.controls=true;audio.src=url;host.append(audio);const note=document.createElement("small");note.textContent="تسجيل صوتي محفوظ مؤقتًا في هذه الصفحة للمعاينة فقط؛ لم يُرسل إلى محادثة أخرى.";host.append(note);stream.getTracks().forEach(t=>t.stop());};athrRecorder.start();$("recordNoteBtn").textContent="⏹ إيقاف التسجيل";chatStatus("جارٍ تسجيل الصوت…");}catch(e){chatStatus("لم يتم منح إذن الميكروفون أو تعذر تشغيله.",true);}
+};
 function addChatMessage(role,content){const host=$("chatMessages"),el=document.createElement("div");el.className="chat-message "+role;el.textContent=content;host.append(el);host.scrollTop=host.scrollHeight;}
 function chatStatus(message,bad=false){$("chatStatus").textContent=message;$("chatStatus").style.color=bad?"#ffaaa8":"var(--muted)";}
 async function sendChat(){
@@ -787,7 +849,7 @@ async function sendChat(){
   const messages={engine_not_configured:"محرك ATHR المستقل لم يكتمل تجهيزه بعد. لم تُرسل رسالتك ولم تُحفظ؛ جرّبي مرة أخرى بعد تفعيل المحرك.",brain_not_enabled:"هذا العقل غير مفعّل بعد. ستتمكن المالكة من تفعيله بعد تجهيز المحرك.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",inference_unreachable:"تعذر الاتصال بخادم ATHR المستقل. رسالتك لم تكتمل؛ حاولي لاحقًا.",inference_auth_failed:"تعذر التحقق من صلاحية الاتصال بخادم ATHR.",inference_rate_limited:"خادم ATHR وصل إلى حد الاستخدام المؤقت.",inference_provider_error:"خادم ATHR واجه خطأ أثناء توليد الرد. لم يكتمل إرسال الإجابة.",inference_invalid_response:"وصل رد غير مفهوم من خادم ATHR.",conversation_brain_mismatch:"هذه المحادثة مرتبطة بعقل آخر. ابدئي محادثة جديدة لهذا العقل."};
   chatStatus(messages[code]||"تعذر إكمال الرسالة بسبب مشكلة اتصال بالخدمة. حاولي لاحقًا.",true);button.disabled=false;$("chatInput").disabled=false;return;
  }
- activeConversationId=data.conversation_id;addChatMessage("user",message);addChatMessage("assistant",data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
+ activeConversationId=data.conversation_id;addChatMessage("user",message);addChatMessage("assistant",data.reply);speakAthr(data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
 }
 $("sendChatBtn").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}});
 $("newChatBtn").onclick=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("بدأتِ محادثة جديدة.");};
