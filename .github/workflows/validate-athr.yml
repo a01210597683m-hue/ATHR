@@ -35,6 +35,25 @@ jobs:
               Path(f"/tmp/athr-inline-scripts/{index}.mjs").write_text(script, encoding="utf-8")
           print(f"Found {len(scripts)} inline script blocks; required controls and media restrictions passed.")
           PY
+      - name: Check media preview lifecycle and safe inference error paths
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          page = Path("index.html").read_text(encoding="utf-8")
+          api = Path("supabase/functions/athr-chat/index.ts").read_text(encoding="utf-8")
+          checks = {
+              "image type validation": 'file.type.startsWith("image/")' in page,
+              "image size limit": 'file.size>10*1024*1024' in page,
+              "preview URL cleanup": "URL.revokeObjectURL(athrPreviewObjectUrl)" in page,
+              "recording uses captured recorder": "const recorder=new MediaRecorder(stream)" in page and "type:recorder.mimeType" in page,
+              "stream cleanup": "stream.getTracks().forEach(t=>t.stop())" in page,
+              "nullable conversation on inference failure": 'conversation_id: conversation?.id || null' in api,
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit("Media/error-path checks failed: " + ", ".join(failed))
+          print("Media preview lifecycle and inference error-path checks passed.")
+          PY
       - name: Check JavaScript syntax
         run: |
           for file in /tmp/athr-inline-scripts/*.mjs; do
