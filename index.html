@@ -556,6 +556,9 @@ input:not([type=checkbox]),textarea,select{border-radius:11px}
 .chat-tools{display:flex;gap:8px;flex-wrap:wrap;margin:8px 22px 0}
 .chat-tools button{padding:9px 12px;border:1px solid rgba(185,169,255,.22);border-radius:12px;background:rgba(137,113,230,.12);color:var(--text);font-size:12px}
 .chat-tools button[aria-pressed="true"]{background:rgba(84,217,244,.18);border-color:var(--cyan)}
+.chat-tools .tutor-setting{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(185,169,255,.16);border-radius:11px;color:var(--muted);font-size:11px;background:rgba(15,21,49,.55)}
+.chat-tools .tutor-setting select{max-width:125px;min-width:88px;padding:5px 7px;border-radius:8px;font-size:11px;background:#171d48;color:var(--text)}
+@media(max-width:700px){.chat-tools .tutor-setting{flex:1 1 130px;justify-content:space-between}.chat-tools .tutor-setting select{max-width:100px}}
 .chat-attachment-preview{margin:8px 22px;padding:8px;border:1px solid var(--line);border-radius:12px}
 .chat-attachment-preview img{display:block;max-width:min(240px,100%);max-height:180px;object-fit:contain;border-radius:8px}
 .chat-attachment-preview audio{width:min(360px,100%)}
@@ -812,7 +815,8 @@ function speakAthr(text){
  if(!athrVoiceReplies||!("speechSynthesis" in window))return;
  window.speechSynthesis.cancel();
  const utterance=new SpeechSynthesisUtterance(text);
- utterance.lang=(document.documentElement.lang||"ar-EG");
+ const voiceLang={en:"en-US",fr:"fr-FR",es:"es-ES",de:"de-DE",ja:"ja-JP",it:"it-IT"};
+ utterance.lang=$("chatBrain").value==="languages"?(voiceLang[$("tutorLanguage").value]||"en-US"):(document.documentElement.lang||"ar-EG");
  utterance.rate=1; utterance.pitch=1;
  window.speechSynthesis.speak(utterance);
 }
@@ -852,7 +856,7 @@ async function sendChat(){
   const messages={engine_not_configured:"محرك ATHR المستقل لم يكتمل تجهيزه بعد. لم تُرسل رسالتك ولم تُحفظ؛ جرّبي مرة أخرى بعد تفعيل المحرك.",brain_not_enabled:"هذا العقل غير مفعّل بعد. ستتمكن المالكة من تفعيله بعد تجهيز المحرك.",hourly_limit_reached:"وصلتِ للحد التجريبي: 12 رسالة في الساعة.",inference_unreachable:"تعذر الاتصال بخادم ATHR المستقل. رسالتك لم تكتمل؛ حاولي لاحقًا.",inference_auth_failed:"تعذر التحقق من صلاحية الاتصال بخادم ATHR.",inference_rate_limited:"خادم ATHR وصل إلى حد الاستخدام المؤقت.",inference_provider_error:"خادم ATHR واجه خطأ أثناء توليد الرد. لم يكتمل إرسال الإجابة.",inference_invalid_response:"وصل رد غير مفهوم من خادم ATHR.",conversation_brain_mismatch:"هذه المحادثة مرتبطة بعقل آخر. ابدئي محادثة جديدة لهذا العقل."};
   chatStatus(messages[code]||"تعذر إكمال الرسالة بسبب مشكلة اتصال بالخدمة. حاولي لاحقًا.",true);button.disabled=false;$("chatInput").disabled=false;return;
  }
- activeConversationId=data.conversation_id;addChatMessage("user",message);addChatMessage("assistant",data.reply);speakAthr(data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
+ activeConversationId=data.conversation_id;$("chatWelcome").hidden=true;addChatMessage("user",message);addChatMessage("assistant",data.reply);speakAthr(data.reply);$("chatInput").value="";chatStatus("تم الرد وحفظ المحادثة في حسابك.");button.disabled=false;$("chatInput").disabled=false;$("chatInput").focus();
 }
 $("sendChatBtn").onclick=sendChat;$("chatInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}});
 $("newChatBtn").onclick=()=>{activeConversationId=null;$("chatMessages").textContent="";$("chatWelcome").hidden=false;chatStatus("بدأتِ محادثة جديدة.");};
