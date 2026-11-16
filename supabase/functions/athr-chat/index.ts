@@ -42,7 +42,7 @@ Deno.serve(async (req: Request) => {
   const userId = authData.user.id;
 
   const contentType = req.headers.get("Content-Type") || "";
-  if (!/^application\\/json(?:\\s*;|$)/i.test(contentType)) return json({ error: "content_type_invalid" }, 415);
+  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) return json({ error: "content_type_invalid" }, 415);
   const declaredLength = Number(req.headers.get("Content-Length") || 0);
   if (Number.isFinite(declaredLength) && declaredLength > 65536) return json({ error: "request_too_large" }, 413);
   let rawBody = "";
