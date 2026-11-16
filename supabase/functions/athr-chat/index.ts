@@ -78,11 +78,29 @@ Deno.serve(async (req: Request) => {
     if (endpoint.protocol !== "https:" || endpoint.username || endpoint.password) return json({ error: "inference_endpoint_invalid" }, 500);
   } catch { return json({ error: "inference_endpoint_invalid" }, 500); }
 
-  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count, error: rateError } = await db.from("messages").select("id", { count: "exact", head: true })
-    .eq("user_id", userId).eq("role", "user").gte("created_at", since);
-  if (rateError) return json({ error: "usage_check_failed" }, 500);
-  if ((count || 0) >= 12) return json({ error: "hourly_limit_reached" }, 429);
+  // Tier-aware fair-use ceilings. Paid tiers only take effect after a server-verified entitlement update.
+  const { data: entitlement, error: entitlementError } = await db.from("athr_user_entitlements")
+    .select("plan_code,status").eq("user_id", userId).maybeSingle();
+  if (entitlementError) return json({ error: "usage_check_failed" }, 500);
+  const activePlan = entitlement?.status === "active" ? entitlement.plan_code : "free";
+  const planLimits: Record<string, { hourly: number; daily: number }> = {
+    free: { hourly: 30, daily: 240 },
+    plus: { hourly: 100, daily: 800 },
+    pro: { hourly: 200, daily: 2000 },
+    business: { hourly: 300, daily: 4000 },
+  };
+  const limits = planLimits[activePlan] || planLimits.free;
+  const hourSince = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const daySince = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const [hourUsage, dayUsage] = await Promise.all([
+    db.from("messages").select("id", { count: "exact", head: true })
+      .eq("user_id", userId).eq("role", "user").gte("created_at", hourSince),
+    db.from("messages").select("id", { count: "exact", head: true })
+      .eq("user_id", userId).eq("role", "user").gte("created_at", daySince),
+  ]);
+  if (hourUsage.error || dayUsage.error) return json({ error: "usage_check_failed" }, 500);
+  if ((hourUsage.count || 0) >= limits.hourly) return json({ error: "hourly_limit_reached" }, 429);
+  if ((dayUsage.count || 0) >= limits.daily) return json({ error: "daily_limit_reached" }, 429);
 
   let conversation: any = null;
   if (conversationId) {
