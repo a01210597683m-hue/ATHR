@@ -16,7 +16,7 @@ create table public.message_attachments (
   user_id uuid not null references auth.users(id) on delete cascade,
   bucket_id text not null default 'athr-assets' references storage.buckets(id) on delete cascade,
   object_path text not null unique,
-  mime_type text not null check (mime_type in ('audio/webm','audio/mp4','audio/ogg','audio/mpeg','audio/aac','audio/wav','audio/webm;codecs=opus')),
+  mime_type text not null check (mime_type in ('audio/webm','audio/mp4','audio/ogg','audio/mpeg','audio/aac','audio/wav')),
   size_bytes bigint not null check (size_bytes > 0 and size_bytes <= 10485760),
   duration_seconds integer not null check (duration_seconds between 1 and 180),
   created_at timestamptz not null default now(),
