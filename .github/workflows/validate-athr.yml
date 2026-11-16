@@ -45,14 +45,37 @@ jobs:
               "image type validation": 'file.type.startsWith("image/")' in page,
               "image size limit": 'file.size>10*1024*1024' in page,
               "preview URL cleanup": "URL.revokeObjectURL(athrPreviewObjectUrl)" in page,
-              "recording uses captured recorder": "const recorder=new MediaRecorder(stream)" in page and "type:recorder.mimeType" in page,
+              "recording uses captured recorder": "const recorder=new MediaRecorder(stream,mimeType?{mimeType}:undefined)" in page and "type:recorder.mimeType" in page,
               "stream cleanup": "stream.getTracks().forEach(t=>t.stop())" in page,
+              "voice note upload": '.storage.from("athr-assets").upload(objectPath,pending.blob' in page,
+              "voice note playback": "async function renderVoiceAttachment(" in page,
+              "voice note metadata": '.from("message_attachments").insert(' in page,
+              "three-minute recording cap": "180000" in page,
               "nullable conversation on inference failure": 'conversation_id: conversation?.id || null' in api,
           }
           failed = [name for name, passed in checks.items() if not passed]
           if failed:
               raise SystemExit("Media/error-path checks failed: " + ", ".join(failed))
           print("Media preview lifecycle and inference error-path checks passed.")
+          PY
+      - name: Check private voice-note storage migration
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          migration = Path("supabase/migrations/20261116000000_athr_private_voice_notes_v1.sql").read_text(encoding="utf-8")
+          checks = {
+              "private bucket retained": "public = true" not in migration,
+              "audio types allowlisted": "'audio/webm'" in migration and "'audio/mp4'" in migration,
+              "10 MiB upload limit": "10485760" in migration,
+              "attachment table RLS": "alter table public.message_attachments enable row level security" in migration,
+              "owner-scoped object paths": "(storage.foldername(name))[1] = (select auth.uid()::text)" in migration,
+              "authenticated-only object policies": "to authenticated" in migration,
+              "duration bounded to three minutes": "duration_seconds between 1 and 180" in migration,
+          }
+          failed = [name for name, passed in checks.items() if not passed]
+          if failed:
+              raise SystemExit("Voice-note storage migration checks failed: " + ", ".join(failed))
+          print("Private voice-note storage migration checks passed.")
           PY
       - name: Check request payload validation
         run: |
