@@ -3,7 +3,7 @@
 The private registry stores ATHR's specialist brain definitions and operational state. It is not a model runtime or an LLM connection.
 
 ## Controls
-- All seven brains are seeded as disabled, including the central coordinator. The central coordinator cannot be disabled through the owner API; it must first be enabled by an authorized owner.
+- All seven brains currently have administrative status `enabled`. The central coordinator cannot be disabled through the owner API.
 - Registry is in the non-exposed `athr_private` schema; browser roles have no table privileges.
 - `athr-specialist-brains` requires a valid JWT and an active, non-revoked `owner` role.
 - GET returns the catalogue metadata only.

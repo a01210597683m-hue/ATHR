@@ -23,4 +23,4 @@
 - Do not expose the Supabase service-role key in HTML, JavaScript, GitHub Pages, or mobile builds.
 
 ## Known status
-The repository currently contains a static HTML prototype. Authentication and consent UI code is present, but end-to-end behavior is not yet verified against a real email account. The owner role has not been assigned. Do not describe the app as production-ready.
+The repository currently contains a static HTML prototype. Authentication and consent UI code is present, but end-to-end behavior is not yet verified against a real email account. The verified owner account currently has an active owner role, and owner-only endpoints have been exercised. This does not mean the app is production-ready; the model runtime, complete auth flows, security review, and end-to-end user tests remain outstanding.
