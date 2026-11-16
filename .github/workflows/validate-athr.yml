@@ -16,7 +16,6 @@ jobs:
       - name: Validate HTML, required controls, and no video capture
         run: |
           python - <<'PY'
-          from html.parser import HTMLParser
           from pathlib import Path
           import re
           source = Path("index.html").read_text(encoding="utf-8")
@@ -24,11 +23,11 @@ jobs:
           missing = [item for item in required if f'id="{item}"' not in source]
           if missing:
               raise SystemExit("Missing required UI controls: " + ", ".join(missing))
-          forbidden = [r"<video\\b", r"capture\\s*=\\s*['\\\"]user", r"accept=['\\\"][^'\\\"]*video/"]
+          forbidden = [r"<video\b", r"capture\s*=\s*['\"]user", r"accept=['\"][^'\"]*video/"]
           found = [pattern for pattern in forbidden if re.search(pattern, source, re.I)]
           if found:
               raise SystemExit("Camera/video UI is not allowed in ATHR.")
-          scripts = re.findall(r"<script(?:\\s[^>]*)?>([\\s\\S]*?)</script>", source, re.I)
+          scripts = re.findall(r"<script(?:\s[^>]*)?>([\s\S]*?)</script>", source, re.I)
           if not scripts:
               raise SystemExit("No inline application scripts found.")
           Path("/tmp/athr-inline-scripts").mkdir(exist_ok=True)
