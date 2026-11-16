@@ -30,22 +30,15 @@ Deno.serve(async (req: Request) => {
   const admin = createClient(url, secretKey, { auth: { autoRefreshToken: false, persistSession: false } });
   const { data: authData, error: authError } = await admin.auth.getUser(token);
   if (authError || !authData.user) return json({ error: "invalid_session" }, 401);
-  const { data: role, error: roleError } = await admin.schema("athr_private").from("staff_roles")
-    .select("role").eq("user_id", authData.user.id).eq("is_active", true).is("revoked_at", null).maybeSingle();
-  if (roleError) return json({ error: "authorization_check_failed" }, 500);
-  if (!role || role.role !== "owner") return json({ error: "owner_access_required" }, 403);
 
   if (req.method === "GET") {
-    const { data, error } = await admin.schema("athr_private").from("specialist_brains")
-      .select("brain_key,name_ar,name_en,description_ar,description_en,category,status,sort_order,updated_at")
-      .order("sort_order", { ascending: true });
-    if (error) return json({ error: "brains_unavailable" }, 500);
-    const { error: auditError } = await admin.schema("athr_private").from("admin_action_log").insert({
-      actor_user_id: authData.user.id, action: "specialist_brains_listed",
-      target_type: "specialist_brain_registry", metadata: { count: data.length },
+    const { data, error } = await admin.rpc("athr_owner_list_specialist_brains", {
+      p_user_id: authData.user.id,
     });
-    if (auditError) return json({ error: "audit_log_failed" }, 500);
-    return json({ brains: data });
+    if (error) return json({ error: "brains_unavailable" }, 500);
+    if (data?.error) return json({ error: data.error }, data.error === "owner_access_required" ? 403 : 500);
+    if (!Array.isArray(data?.brains)) return json({ error: "brains_unavailable" }, 500);
+    return json({ brains: data.brains });
   }
 
   let body: any;
@@ -55,20 +48,17 @@ Deno.serve(async (req: Request) => {
   if (!/^[a-z][a-z0-9_]{1,47}$/.test(key) || !allowedStatuses.includes(body.status)) {
     return json({ error: "invalid_brain_or_status" }, 400);
   }
-  if (key === "central" && body.status !== "enabled") {
-    return json({ error: "central_brain_cannot_be_disabled" }, 400);
-  }
-  const { data: existing, error: findError } = await admin.schema("athr_private").from("specialist_brains")
-    .select("brain_key,status").eq("brain_key", key).maybeSingle();
-  if (findError || !existing) return json({ error: "brain_not_found" }, 404);
-  const { error: updateError } = await admin.schema("athr_private").from("specialist_brains")
-    .update({ status: body.status, updated_at: new Date().toISOString(), updated_by: authData.user.id })
-    .eq("brain_key", key);
-  if (updateError) return json({ error: "brain_update_failed" }, 500);
-  const { error: auditError } = await admin.schema("athr_private").from("admin_action_log").insert({
-    actor_user_id: authData.user.id, action: "specialist_brain_status_changed",
-    target_type: "specialist_brain", metadata: { brain_key: key, previous_status: existing.status, new_status: body.status },
+  const { data, error } = await admin.rpc("athr_owner_set_specialist_brain_status", {
+    p_user_id: authData.user.id,
+    p_brain_key: key,
+    p_status: body.status,
   });
-  if (auditError) return json({ error: "audit_log_failed" }, 500);
-  return json({ success: true, brain_key: key, status: body.status });
+  if (error) return json({ error: "brain_update_failed" }, 500);
+  if (data?.error) {
+    const code = data.error;
+    const httpStatus = code === "owner_access_required" ? 403
+      : code === "brain_not_found" ? 404 : 400;
+    return json({ error: code }, httpStatus);
+  }
+  return json(data);
 });
